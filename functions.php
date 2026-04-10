@@ -59,30 +59,50 @@ function wataco_register_polylang_strings() {
     }
 
     // Header Navigation Strings
-    pll_register_string('wataco_header', 'Home', 'en_US|vi|ja');
-    pll_register_string('wataco_header', 'Projects', 'en_US|vi|ja');
-    pll_register_string('wataco_header', 'Careers', 'en_US|vi|ja');
-    pll_register_string('wataco_header', 'News', 'en_US|vi|ja');
-    pll_register_string('wataco_header', 'About Us', 'en_US|vi|ja');
-    pll_register_string('wataco_header', 'Get Quote', 'en_US|vi|ja');
+    pll_register_string('wataco_header', 'Home');
+    pll_register_string('wataco_header', 'Projects');
+    pll_register_string('wataco_header', 'Careers');
+    pll_register_string('wataco_header', 'News');
+    pll_register_string('wataco_header', 'About Us');
+    pll_register_string('wataco_header', 'Get Quote');
 
-    // Footer Strings
-    pll_register_string('wataco_footer', 'Solutions', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Company', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Contact', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Address', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Email', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Phone', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Privacy', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Terms', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'All rights reserved', 'en_US|vi|ja');
-    pll_register_string('wataco_footer', 'Follow Us', 'en_US|vi|ja');
+    // Footer Column Headers
+    pll_register_string('wataco_footer', 'Solutions');
+    pll_register_string('wataco_footer', 'Company');
+    pll_register_string('wataco_footer', 'Contact');
+
+    // Footer Solutions Items
+    pll_register_string('wataco_footer', 'Web Development');
+    pll_register_string('wataco_footer', 'Mobile Apps');
+    pll_register_string('wataco_footer', 'Cloud Services');
+    pll_register_string('wataco_footer', 'Consulting');
+
+    // Footer Company Links
+    pll_register_string('wataco_footer', 'About Us');
+    pll_register_string('wataco_footer', 'Careers');
+    pll_register_string('wataco_footer', 'News');
+    pll_register_string('wataco_footer', 'Projects');
+
+    // Footer Contact Labels
+    pll_register_string('wataco_footer', 'Address');
+    pll_register_string('wataco_footer', 'Email');
+    pll_register_string('wataco_footer', 'Phone');
+
+    // Footer Copyright and Legal
+    pll_register_string('wataco_footer', 'All rights reserved');
+    pll_register_string('wataco_footer', 'Privacy');
+    pll_register_string('wataco_footer', 'Terms');
+
+    // Footer Social Media Aria-Labels
+    pll_register_string('wataco_footer', 'Visit us on LinkedIn');
+    pll_register_string('wataco_footer', 'Visit us on Facebook');
+    pll_register_string('wataco_footer', 'Visit us on YouTube');
 
     // Floating Contact Strings
-    pll_register_string('wataco_floating', 'Facebook', 'en_US|vi|ja');
-    pll_register_string('wataco_floating', 'Chat Zalo', 'en_US|vi|ja');
-    pll_register_string('wataco_floating', 'Hotline: 078.678.8837', 'en_US|vi|ja');
-    pll_register_string('wataco_floating', 'Call Us', 'en_US|vi|ja');
+    pll_register_string('wataco_floating', 'Facebook');
+    pll_register_string('wataco_floating', 'Chat Zalo');
+    pll_register_string('wataco_floating', 'Hotline: 078.678.8837');
+    pll_register_string('wataco_floating', 'Call Us');
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
 
