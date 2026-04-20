@@ -376,4 +376,41 @@ describe('Header Component', () => {
       cy.get('nav [data-submenu], nav ul ul').should('exist').or('not.exist');
     });
   });
+
+  describe('Link Styling - No Underlines (Global Design Guideline)', () => {
+    it('should have no text-decoration on header links', () => {
+      cy.get('header a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should have no underlines on navigation items', () => {
+      cy.viewport('macbook-15');
+      cy.get('header nav a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none');
+      });
+    });
+
+    it('should have no underlines on logo link', () => {
+      cy.get('header a[href="/"], header a[href*="home"], header .flex-shrink-0 a').should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should have no underlines on mobile navigation links', () => {
+      cy.viewport('iphone-x');
+      cy.get('[aria-label="Toggle menu"], [data-menu-toggle]').click();
+      cy.get('nav a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should maintain no-underline on hover state', () => {
+      cy.get('header a').first().trigger('mouseenter');
+      cy.get('header a').first().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should maintain no-underline on focus state', () => {
+      cy.get('header a').first().focus();
+      cy.focused().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+  });
 });
