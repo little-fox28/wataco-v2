@@ -19,19 +19,19 @@ describe('Floating Contact Buttons', () => {
       cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('be.visible');
     });
 
-    it('should be hidden on desktop (1024px)', () => {
+    it('should be visible on desktop (1024px)', () => {
       cy.viewport(1024, 768);
-      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('not.be.visible');
+      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('be.visible');
     });
 
-    it('should be hidden on large desktop (1440px)', () => {
+    it('should be visible on large desktop (1440px)', () => {
       cy.viewport(1440, 900);
-      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('not.be.visible');
+      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('be.visible');
     });
 
-    it('should be hidden on macbook-15', () => {
+    it('should be visible on macbook-15', () => {
       cy.viewport('macbook-15');
-      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('not.be.visible');
+      cy.get('[data-floating-contact], [data-floating-action-button], .floating-contact').should('be.visible');
     });
   });
 
@@ -521,6 +521,46 @@ describe('Floating Contact Buttons', () => {
     it('buttons should respond immediately to interactions', () => {
       cy.get('[data-button="facebook"]').click().then(() => {
         expect(true).to.be.true;
+      });
+    });
+  });
+
+  describe('Link Styling - No Underlines (Global Design Guideline)', () => {
+    it('should have no text-decoration on floating contact buttons', () => {
+      cy.get('[data-floating-contact] a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should have no underlines on Zalo link', () => {
+      cy.get('a[data-button="zalo"], a[href*="zalo"]').should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should have no underlines on Phone link', () => {
+      cy.get('a[data-button="phone"], a[href*="tel:"]').should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should have no underlines on Facebook link', () => {
+      cy.get('a[data-button="facebook"], a[href*="facebook"]').should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should maintain no-underline on hover state', () => {
+      cy.get('[data-floating-contact] a').first().trigger('mouseenter');
+      cy.get('[data-floating-contact] a').first().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should maintain no-underline on focus state', () => {
+      cy.get('[data-floating-contact] a').first().focus();
+      cy.focused().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should maintain no-underline across all breakpoints', () => {
+      const breakpoints = [[375, 667], [768, 1024], [1024, 768], [1440, 900]];
+      breakpoints.forEach(([width, height]) => {
+        cy.viewport(width, height);
+        cy.get('[data-floating-contact] a').each(($link) => {
+          cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+        });
       });
     });
   });

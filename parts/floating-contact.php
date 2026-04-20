@@ -17,7 +17,7 @@ if (empty($floating_contacts)) {
 }
 ?>
 
-<div class="fixed bottom-6 right-6 z-50 lg:hidden flex flex-col gap-4"
+<div class="fixed bottom-6 right-6 z-50 flex flex-col gap-4"
      x-data="{ showButtons: true }"
      data-floating-contact>
 
@@ -53,10 +53,7 @@ if (empty($floating_contacts)) {
                 <?php echo esc_html(pll__('Chat Zalo')); ?>
                 <span class="absolute -right-1 top-1/2 -translate-y-1/2 border-l-4 border-l-gray-900 border-y-4 border-y-transparent"></span>
             </span>
-            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 6v6m-3-3h6" stroke="white" stroke-width="1.5" fill="none"></path>
-            </svg>
+            <span class="text-white font-black text-s font-heading no-underline">Zalo</span>
         </a>
     <?php endif; ?>
 

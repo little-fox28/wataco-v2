@@ -312,8 +312,10 @@ describe('Footer Component', () => {
       cy.get('footer h3, footer h4, footer [role="heading"]').should('have.css', 'font-weight').or('have.css', 'font-size');
     });
 
-    it('should have proper link styling', () => {
-      cy.get('footer a').should('have.css', 'color').or('have.css', 'text-decoration');
+    it('should have proper link styling without underlines', () => {
+      cy.get('footer a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
     });
 
     it('should have consistent text color on dark background', () => {
@@ -391,6 +393,43 @@ describe('Footer Component', () => {
 
     it('should display all sections horizontally', () => {
       cy.get('footer [data-section="brand"], footer [data-section="solutions"], footer [data-section="company"], footer [data-section="contact"]').should('have.length.gte', 1);
+    });
+  });
+
+  describe('Link Styling - No Underlines (Global Design Guideline)', () => {
+    it('should have no text-decoration on all footer links', () => {
+      cy.get('footer a').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should have no underlines on social media links', () => {
+      cy.get('footer a[href*="linkedin"], footer a[href*="facebook"], footer a[href*="youtube"]').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should have no underlines on footer navigation links', () => {
+      cy.viewport(1440, 900);
+      cy.get('footer a[href*="/"]').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
+    });
+
+    it('should maintain no-underline on hover state for footer links', () => {
+      cy.get('footer a').first().trigger('mouseenter');
+      cy.get('footer a').first().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should maintain no-underline on focus state for footer links', () => {
+      cy.get('footer a').first().focus();
+      cy.focused().should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+    });
+
+    it('should have no underlines on legal/privacy links', () => {
+      cy.get('footer a[href*="privacy"], footer a[href*="terms"], footer a[href*="legal"]').each(($link) => {
+        cy.wrap($link).should('have.css', 'text-decoration-line', 'none').or('have.css', 'text-decoration', 'none');
+      });
     });
   });
 });
