@@ -47,7 +47,7 @@ $language_labels = array(
             @scroll.window="isSticky = window.scrollY > 0"
             :class="isSticky ? 'fixed bg-[#228B22]/95 backdrop-blur-md shadow-lg' : 'relative'">
         
-        <div class="max-w-[1440px] mx-auto px-4 lg:px-6 h-16 lg:h-20 flex items-center justify-between">
+        <div class="max-w-360 mx-auto px-4 lg:px-6 h-16 lg:h-20 flex items-center justify-between">
             <!-- Desktop Logo -->
             <div class="hidden lg:block">
                 <?php
@@ -161,7 +161,7 @@ $language_labels = array(
         <div id="mobile-menu-panel"
              x-show="mobileMenuOpen"
              x-cloak
-             class="fixed inset-0 z-[60] bg-[#1A2B3C] text-white flex flex-col p-6 lg:hidden transform-gpu"
+             class="fixed inset-0 z-60 bg-[#1A2B3C] text-white flex flex-col p-6 lg:hidden transform-gpu"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-x-full"
              x-transition:enter-end="opacity-100 translate-x-0"

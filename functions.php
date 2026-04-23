@@ -118,16 +118,61 @@ function wataco_register_polylang_strings() {
         'Call Us',
     );
 
+    $not_found_strings = array(
+        'PAGE NOT FOUND',
+        'The page you are looking for does not exist, has been removed, or is temporarily unavailable.',
+        'BACK TO HOMEPAGE',
+    );
+
+    $about_page_strings = array(
+        'DEVELOPMENT ORIENTATION',
+        'Vision & Mission',
+        'Vision',
+        'Creating a sustainable future through constructing and investing in advanced solar energy in Vietnam, supporting business growth and partnering with the community.',
+        'Mission',
+        'Providing high-quality, advanced, and environmentally friendly solar energy construction and investment solutions, contributing to enhancing life quality and supporting the sustainable development of businesses in Vietnam.',
+        'Core Values',
+        'Sustainability and Eco-friendliness',
+        'Quality and Innovation',
+        'Responsibility and Transparency',
+        'Collaboration and Development',
+        'Innovation and Creativity',
+        'Working Environment',
+        'Life Rhythm At WATACO',
+        'Everyday moments, field trips, and smiles on-site are the most positive source of energy for us.',
+        'Team Building 2025',
+        'Site Supervision',
+        'Internal Training',
+        'Quarterly Strategy Meeting',
+        'Project Acceptance',
+        'Sports Activities',
+        'Culture',
+        'Work',
+        'Development',
+        'Office',
+        'Connection',
+    );
+
     foreach ($header_strings as $string) {
         pll_register_string('wataco_header_' . sanitize_title($string), $string, $polylang_languages);
     }
 
     foreach ($footer_strings as $string) {
-        pll_register_string('wataco_footer_' . sanitize_title($string), $string, $polylang_languages);
+        $key = 'wataco_footer_' . sanitize_title($string);
+        $value = ($string === 'Email' || $string === 'Phone') ? $key : $string;
+        pll_register_string($key, $value, $polylang_languages);
     }
 
     foreach ($floating_strings as $string) {
         pll_register_string('wataco_floating_' . sanitize_title($string), $string, $polylang_languages);
+    }
+
+    foreach ($not_found_strings as $string) {
+        pll_register_string('wataco_not_found_' . sanitize_title($string), $string, $polylang_languages);
+    }
+
+    foreach ($about_page_strings as $string) {
+        pll_register_string('wataco_about_' . sanitize_title($string), $string, $polylang_languages);
     }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
@@ -206,7 +251,7 @@ function wataco_register_theme_settings_acf_fields() {
                 array(
                     'param' => 'page_template',
                     'operator' => '==',
-                    'value' => 'template-theme-settings.php',
+                    'value' => 'page-templates/template-theme-settings.php',
                 ),
             ),
             array(
@@ -225,24 +270,108 @@ function wataco_register_theme_settings_acf_fields() {
 add_action('acf/init', 'wataco_register_theme_settings_acf_fields');
 
 /**
- * Register Theme Settings options page for ACF.
+ * Build default culture section values for About Us.
  *
- * @return void
+ * @return array<string, string>
  */
-function wataco_register_theme_settings_options_page() {
-    if (!function_exists('acf_add_options_page')) {
-        return;
+function wataco_get_about_culture_fallbacks() {
+    $translate = static function ($text) {
+        return function_exists('pll__') ? (string) pll__($text) : $text;
+    };
+
+    $fallbacks = array(
+        'subtitle'    => $translate('Working Environment'),
+        'title'       => $translate('Life Rhythm At WATACO'),
+        'description' => $translate('Everyday moments, field trips, and smiles on-site are the most positive source of energy for us.'),
+    );
+
+    $fallbacks = apply_filters('wataco_about_culture_fallbacks', $fallbacks);
+    do_action('wataco_about_culture_fallbacks_loaded', $fallbacks);
+
+    return $fallbacks;
+}
+
+/**
+ * Build About Us culture gallery cards from ACF fixed fields.
+ *
+ * @return array<int, array<string, string|int>>
+ */
+function wataco_get_about_culture_items() {
+    $translate = static function ($text) {
+        return function_exists('pll__') ? (string) pll__($text) : $text;
+    };
+
+    $meta = array(
+        1 => array(
+            'img'      => '/team_building.jpg',
+            'span'     => 'md:col-span-2 md:row-span-2',
+            'category' => $translate('Culture'),
+            'title'    => $translate('Team Building 2025'),
+        ),
+        2 => array(
+            'img'      => 'https://images.unsplash.com/photo-1759922378222-47ad736a174d?auto=format&fit=crop&q=80&w=800',
+            'span'     => 'md:col-span-1 md:row-span-1',
+            'category' => $translate('Work'),
+            'title'    => $translate('Site Supervision'),
+        ),
+        3 => array(
+            'img'      => 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&q=80&w=800',
+            'span'     => 'md:col-span-1 md:row-span-1',
+            'category' => $translate('Development'),
+            'title'    => $translate('Internal Training'),
+        ),
+        4 => array(
+            'img'      => 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&q=80&w=800',
+            'span'     => 'md:col-span-1 md:row-span-2',
+            'category' => $translate('Office'),
+            'title'    => $translate('Quarterly Strategy Meeting'),
+        ),
+        5 => array(
+            'img'      => 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=800',
+            'span'     => 'md:col-span-2 md:row-span-1',
+            'category' => $translate('Work'),
+            'title'    => $translate('Project Acceptance'),
+        ),
+        6 => array(
+            'img'      => 'https://images.unsplash.com/photo-1762944082537-bf904828a5c9?auto=format&fit=crop&q=80&w=800',
+            'span'     => 'md:col-span-2 md:row-span-1',
+            'category' => $translate('Connection'),
+            'title'    => $translate('Sports Activities'),
+        ),
+    );
+
+    $culture_items = array();
+    for ($index = 1; $index <= 6; $index++) {
+        $default_item = $meta[$index];
+        $image_id = function_exists('get_field') ? (int) get_field('culture_item_' . $index . '_img') : 0;
+        $image_url = $default_item['img'];
+
+        if ($image_id > 0) {
+            $attachment_url = wp_get_attachment_image_url($image_id, 'large');
+            if (is_string($attachment_url) && '' !== $attachment_url) {
+                $image_url = $attachment_url;
+            }
+        }
+
+        $category_value = function_exists('get_field') ? get_field('culture_item_' . $index . '_category') : '';
+        $title_value = function_exists('get_field') ? get_field('culture_item_' . $index . '_title') : '';
+
+        $culture_item = array(
+            'id'       => $index,
+            'img'      => $image_url,
+            'span'     => $default_item['span'],
+            'category' => (is_string($category_value) && '' !== trim($category_value)) ? trim($category_value) : $default_item['category'],
+            'title'    => (is_string($title_value) && '' !== trim($title_value)) ? trim($title_value) : $default_item['title'],
+        );
+
+        $culture_items[] = apply_filters('wataco_about_culture_item', $culture_item, $index);
     }
 
-    acf_add_options_page(array(
-        'page_title' => 'Theme Settings',
-        'menu_title' => 'Theme Settings',
-        'menu_slug'  => 'theme-settings',
-        'capability' => 'edit_posts',
-        'redirect'   => false,
-    ));
+    $culture_items = apply_filters('wataco_about_culture_items', $culture_items);
+    do_action('wataco_about_culture_items_loaded', $culture_items);
+
+    return $culture_items;
 }
-add_action('acf/init', 'wataco_register_theme_settings_options_page', 5);
 
 /**
  * Initialize Theme Options
@@ -255,8 +384,8 @@ function wataco_init_theme_options() {
     if (!get_option('wataco_floating_contacts')) {
         $floating_contacts = array(
             'facebook' => 'https://www.facebook.com/wataco',
-            'zalo'     => 'https://zalo.me/0786788837',
-            'phone'    => '0786788837'
+            'zalo'     => 'https://zalo.me/0359 959 831',
+            'phone'    => '0359 959 831'
         );
         add_option('wataco_floating_contacts', $floating_contacts);
     }
@@ -266,7 +395,7 @@ function wataco_init_theme_options() {
         $social_links = array(
             'linkedin'  => 'https://linkedin.com/company/wataco',
             'facebook'  => 'https://www.facebook.com/wataco',
-            'zalo'      => 'https://zalo.me/0786788837',
+            'zalo'      => 'https://zalo.me/0359 959 831',
             'tiktok'    => '',
             'youtube'   => 'https://youtube.com/@wataco'
         );
@@ -279,7 +408,7 @@ function wataco_init_theme_options() {
             'address_1' => '123 Main Street, Ho Chi Minh City, Vietnam',
             'address_2' => '456 Tech Boulevard, District 1, HCM City',
             'email'     => 'info@wataco.dev',
-            'phone'     => '0786788837'
+            'phone'     => '0359 959 831'
         );
         add_option('wataco_contact_info', $contact_info);
     }
@@ -376,17 +505,19 @@ function wataco_get_theme_settings_option_field($field_name, $default_value = ''
  */
 function wataco_get_footer_data() {
     $theme_settings_page_id = wataco_get_theme_settings_page_id();
+    $social_links = wataco_get_social_links();
+    $contact_info = wataco_get_contact_info();
 
     $footer_data = array(
         'global_logo_id'            => (int) wataco_get_theme_settings_field('global_logo', 0),
         'faded_background_logo_id'  => (int) wataco_get_theme_settings_field('faded_background_logo', 0),
-        'email'                     => (string) wataco_get_theme_settings_option_field('email', wataco_get_theme_settings_field('email', '')),
-        'phone'                     => (string) wataco_get_theme_settings_option_field('phone', wataco_get_theme_settings_field('phone', '')),
-        'linkedin'                  => (string) wataco_get_theme_settings_option_field('linkedin', wataco_get_theme_settings_field('linkedin', '')),
-        'facebook'                  => (string) wataco_get_theme_settings_option_field('facebook', wataco_get_theme_settings_field('facebook', '')),
-        'zalo'                      => (string) wataco_get_theme_settings_option_field('zalo', wataco_get_theme_settings_field('zalo', '')),
-        'tiktok'                    => (string) wataco_get_theme_settings_option_field('tiktok', wataco_get_theme_settings_field('tiktok', '')),
-        'youtube'                   => (string) wataco_get_theme_settings_option_field('youtube', wataco_get_theme_settings_field('youtube', '')),
+        'email'                     => (string) ($contact_info['email'] ?? ''),
+        'phone'                     => (string) ($contact_info['phone'] ?? ''),
+        'linkedin'                  => (string) ($social_links['linkedin'] ?? ''),
+        'facebook'                  => (string) ($social_links['facebook'] ?? ''),
+        'zalo'                      => (string) ($social_links['zalo'] ?? ''),
+        'tiktok'                    => (string) ($social_links['tiktok'] ?? ''),
+        'youtube'                   => (string) ($social_links['youtube'] ?? ''),
         'company_description'       => (string) pll__('Company Description'),
         'address_1'                 => (string) pll__('Address 1 (HQ)'),
         'address_2'                 => (string) pll__('Address 2 (Branch)'),
@@ -436,9 +567,9 @@ function wataco_get_floating_contacts() {
  */
 function wataco_get_social_links() {
     $default_social_links = get_option('wataco_social_links', array());
-    $linkedin_option = (string) wataco_get_theme_settings_option_field('linkedin', '');
-    $facebook_option = (string) wataco_get_theme_settings_option_field('facebook', '');
-    $zalo_option = (string) wataco_get_theme_settings_option_field('zalo', '');
+    $linkedin_option = (string) get_option('wataco_social_linkedin', '');
+    $facebook_option = (string) get_option('wataco_social_facebook', '');
+    $zalo_option = (string) get_option('wataco_social_zalo', '');
     $tiktok_option = (string) wataco_get_theme_settings_option_field('tiktok', '');
     $youtube_option = (string) wataco_get_theme_settings_option_field('youtube', '');
 
@@ -476,7 +607,7 @@ function wataco_get_contact_info() {
     $address_1 = function_exists('pll__') ? pll__('Address 1 (HQ)') : '';
     $address_2 = function_exists('pll__') ? pll__('Address 2 (Branch)') : '';
     $email_option = (string) wataco_get_theme_settings_option_field('email', '');
-    $phone_option = (string) wataco_get_theme_settings_option_field('phone', '');
+    $phone_option = (string) get_option('wataco_contact_phone', '');
 
     return apply_filters('wataco_contact_info', array(
         'address_1' => $address_1,
@@ -627,6 +758,59 @@ function wataco_get_cached_nav_menu_markup($args) {
     set_transient($transient_key, $menu_markup, $cache_ttl);
 
     return $menu_markup;
+}
+
+/**
+ * Resolve page-part slug from current page context.
+ *
+ * Priority:
+ * 1. Assigned page template name (template-*.php => parts/pages/*.php).
+ * 2. Current page slug.
+ * 3. Polylang translated page slugs.
+ *
+ * @param WP_Post|int|null $page Page object or page ID.
+ * @return string
+ */
+function wataco_resolve_page_part_slug($page = null) {
+    $page_post = get_post($page);
+    if (!$page_post instanceof WP_Post || $page_post->post_type !== 'page') {
+        return '';
+    }
+
+    $candidates = array();
+    $template_slug = (string) get_page_template_slug($page_post);
+    if ('' !== $template_slug) {
+        $template_base = basename($template_slug, '.php');
+        if (0 === strpos($template_base, 'template-')) {
+            $candidates[] = substr($template_base, 9);
+        }
+    }
+
+    if ('' !== (string) $page_post->post_name) {
+        $candidates[] = sanitize_title((string) $page_post->post_name);
+    }
+
+    if (function_exists('pll_get_post_translations')) {
+        $translations = pll_get_post_translations((int) $page_post->ID);
+        if (is_array($translations)) {
+            foreach ($translations as $translation_id) {
+                $translated_slug = get_post_field('post_name', (int) $translation_id);
+                if (is_string($translated_slug) && '' !== $translated_slug) {
+                    $candidates[] = sanitize_title($translated_slug);
+                }
+            }
+        }
+    }
+
+    $candidates = array_values(array_unique(array_filter($candidates)));
+
+    foreach ($candidates as $candidate) {
+        if ('' !== locate_template('parts/pages/' . $candidate . '.php', false, false)) {
+            return $candidate;
+        }
+    }
+
+    return '';
 }
 
 /**
@@ -822,3 +1006,13 @@ function wataco_add_footer_schema_to_head() {
     wataco_output_footer_schema();
 }
 add_action('wp_head', 'wataco_add_footer_schema_to_head', 99);
+
+/**
+ * Custom Theme Settings page.
+ */
+require get_template_directory() . '/inc/theme-settings.php';
+
+/**
+ * Custom ACF Field Groups
+ */
+require get_template_directory() . '/inc/acf-about-us.php';

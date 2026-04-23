@@ -276,11 +276,11 @@ describe('Footer Component', () => {
    */
   describe('Contact Information', () => {
     it('should display email address', () => {
-      cy.get('footer').should('contain.text', 'info@wataco.net');
+      cy.get('footer').should('contain.text', 'info@wataco.com.vn');
     });
 
     it('should display phone number', () => {
-      cy.get('footer').should('contain.text', '0786788837');
+      cy.get('footer').should('contain.text', '0359 959 831');
     });
 
     it('email should be a mailto link', () => {
@@ -296,7 +296,7 @@ describe('Footer Component', () => {
     });
 
     it('email link should have correct href format', () => {
-      cy.get('footer a[href*="mailto:info@wataco.net"]').should('exist');
+      cy.get('footer a[href*="mailto:info@wataco.com.vn"]').should('exist');
     });
 
     it('phone link should have tel: protocol', () => {
@@ -304,7 +304,7 @@ describe('Footer Component', () => {
     });
 
     it('phone link should strip special characters', () => {
-      cy.get('footer a[href^="tel:0786788837"]').should('exist');
+      cy.get('footer a[href^="tel:0359 959 831"]').should('exist');
     });
 
     it('should have location icons for addresses', () => {

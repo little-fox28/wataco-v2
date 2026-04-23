@@ -163,7 +163,7 @@ describe('Floating Contact Buttons', () => {
       cy.get('[data-button="zalo"]')
         .should('have.attr', 'href')
         .and('include', 'zalo.me')
-        .and('include', '0786788837');
+        .and('include', '0359 959 831');
     });
 
     it('should open in new tab', () => {
@@ -190,7 +190,7 @@ describe('Floating Contact Buttons', () => {
     it('should have correct phone number in link', () => {
       cy.get('[data-button="zalo"]')
         .should('have.attr', 'href')
-        .and('match', /0786788837|+84786788837/);
+        .and('match', /0359 959 831|+84786788837/);
     });
   });
 
@@ -207,7 +207,7 @@ describe('Floating Contact Buttons', () => {
 
     it('should have correct phone number', () => {
       cy.get('[data-button="phone"]')
-        .should('have.attr', 'href', 'tel:0786788837').or('have.attr', 'href').and('include', '0786788837');
+        .should('have.attr', 'href', 'tel:0359 959 831').or('have.attr', 'href').and('include', '0359 959 831');
     });
 
     it('should not open in new tab', () => {

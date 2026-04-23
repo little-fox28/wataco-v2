@@ -10,9 +10,18 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$floating_contacts = wataco_get_floating_contacts();
+$facebook_url = (string) get_option('wataco_social_facebook', '');
+$zalo_url = (string) get_option('wataco_social_zalo', '');
+$phone_fallback = (string) get_option('wataco_contact_phone', '');
+$phone = (function_exists('pll__')) ? (string) pll__('wataco_footer_phone') : $phone_fallback;
 
-if (empty($floating_contacts)) {
+if ($phone === 'wataco_footer_phone') {
+    $phone = $phone_fallback;
+}
+
+$phone_href = preg_replace('/[^0-9+]/', '', $phone);
+
+if (empty($facebook_url) && empty($zalo_url) && empty($phone_href)) {
     return;
 }
 ?>
@@ -22,11 +31,11 @@ if (empty($floating_contacts)) {
      data-floating-contact>
 
     <!-- Facebook Button -->
-    <?php if (!empty($floating_contacts['facebook'])) : ?>
-        <a href="<?php echo esc_url($floating_contacts['facebook']); ?>"
+    <?php if (!empty($facebook_url)) : ?>
+        <a href="<?php echo esc_url($facebook_url); ?>"
            target="_blank"
            rel="noopener noreferrer"
-           data-button="facebook"
+            data-button="facebook"
            aria-label="<?php esc_attr_e(pll__('Facebook')); ?>"
            class="w-14 h-14 rounded-full bg-[#1877F2] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 group relative">
             <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none"
@@ -41,11 +50,11 @@ if (empty($floating_contacts)) {
     <?php endif; ?>
 
     <!-- Zalo Button -->
-    <?php if (!empty($floating_contacts['zalo'])) : ?>
-        <a href="<?php echo esc_url($floating_contacts['zalo']); ?>"
+    <?php if (!empty($zalo_url)) : ?>
+        <a href="<?php echo esc_url($zalo_url); ?>"
            target="_blank"
            rel="noopener noreferrer"
-           data-button="zalo"
+            data-button="zalo"
            aria-label="<?php esc_attr_e(pll__('Chat Zalo')); ?>"
            class="w-14 h-14 rounded-full bg-[#0068FF] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 group relative">
             <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none"
@@ -58,15 +67,15 @@ if (empty($floating_contacts)) {
     <?php endif; ?>
 
     <!-- Phone Button -->
-    <?php if (!empty($floating_contacts['phone'])) : ?>
-        <a href="<?php echo esc_url('tel:' . str_replace(array(' ', '-', '(', ')'), '', $floating_contacts['phone'])); ?>"
+    <?php if (!empty($phone) && !empty($phone_href)) : ?>
+        <a href="tel:<?php echo esc_attr($phone_href); ?>"
            data-button="phone"
-           aria-label="<?php esc_attr_e(sprintf(pll__('Call Us: %s'), $floating_contacts['phone'])); ?>"
-           class="w-14 h-14 rounded-full bg-[#EA580C] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 group relative">
+           aria-label="<?php esc_attr_e(sprintf(pll__('Call Us: %s'), $phone)); ?>"
+            class="w-14 h-14 rounded-full bg-[#EA580C] flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 group relative">
             <div class="absolute inset-0 rounded-full bg-[#EA580C] animate-ping opacity-20"></div>
             <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-gray-900 text-white text-xs font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md pointer-events-none"
                   data-tooltip="phone">
-                <?php echo esc_html(sprintf(pll__('Hotline: %s'), $floating_contacts['phone'])); ?>
+                <?php echo esc_html(sprintf(pll__('Hotline: %s'), $phone)); ?>
                 <span class="absolute -right-1 top-1/2 -translate-y-1/2 border-l-4 border-l-gray-900 border-y-4 border-y-transparent"></span>
             </span>
             <svg class="w-6 h-6 text-white fill-white relative z-10" viewBox="0 0 24 24">
