@@ -18,13 +18,17 @@ $core_values = array(
 );
 ?>
 
-<section class="py-24 lg:py-40 bg-white relative overflow-hidden border-t border-gray-100" data-about-parallax-root>
-    <div class="absolute top-1/4 -right-32 w-[38rem] h-[38rem] bg-[#228B22]/5 rounded-full blur-[120px] pointer-events-none" data-about-parallax="100,-100"></div>
-    <div class="absolute bottom-1/4 -left-32 w-[25rem] h-[25rem] bg-[#FFD700]/10 rounded-full blur-[100px] pointer-events-none" data-about-parallax="-50,50"></div>
+<section class="py-24 lg:py-40 bg-white relative overflow-hidden border-t border-gray-100" data-parallax-root>
+    <div class="absolute top-1/4 -right-32 w-[38rem] h-[38rem] bg-[#228B22]/5 rounded-full blur-[120px] pointer-events-none" data-parallax="100,-100"></div>
+    <div class="absolute bottom-1/4 -left-32 w-[25rem] h-[25rem] bg-[#FFD700]/10 rounded-full blur-[100px] pointer-events-none" data-parallax="-50,50"></div>
 
     <div class="max-w-[1440px] mx-auto px-6 relative z-10">
         <div class="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
-            <div class="lg:w-1/3 lg:sticky lg:top-32" data-about-reveal="left" data-about-replay>
+            <div class="lg:w-1/3 lg:sticky lg:top-32"
+                 x-data="{ shown: false }"
+                 x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                 class="transition-all duration-700 ease-out"
+                 :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'">
                 <span class="text-[#228B22] font-black text-xs uppercase tracking-[0.3em] mb-4 block">
                     <?php echo esc_html(pll__('DEVELOPMENT ORIENTATION')); ?>
                 </span>
@@ -35,7 +39,11 @@ $core_values = array(
             </div>
 
             <div class="lg:w-2/3 flex flex-col gap-24 lg:gap-32 pb-10">
-                <div class="relative" data-about-reveal="up" data-about-replay>
+                <div class="relative"
+                     x-data="{ shown: false }"
+                     x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                     class="transition-all duration-700 ease-out"
+                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
                     <div class="absolute -left-4 lg:-left-12 -top-8 text-[120px] text-gray-50 font-black font-heading opacity-50 select-none z-0">
                         01
                     </div>
@@ -55,7 +63,12 @@ $core_values = array(
                     </div>
                 </div>
 
-                <div class="relative" data-about-reveal="up" data-about-replay>
+                <div class="relative"
+                     x-data="{ shown: false }"
+                     x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                     class="transition-all duration-700 ease-out"
+                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                     style="transition-delay: 150ms;">
                     <div class="absolute -left-4 lg:-left-12 -top-8 text-[120px] text-gray-50 font-black font-heading opacity-50 select-none z-0">
                         02
                     </div>
@@ -75,7 +88,12 @@ $core_values = array(
                     </div>
                 </div>
 
-                <div class="relative" data-about-reveal="up" data-about-replay>
+                <div class="relative"
+                     x-data="{ shown: false }"
+                     x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                     class="transition-all duration-700 ease-out"
+                     :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                     style="transition-delay: 300ms;">
                     <div class="absolute -left-4 lg:-left-12 -top-8 text-[120px] text-gray-50 font-black font-heading opacity-50 select-none z-0">
                         03
                     </div>
@@ -91,7 +109,11 @@ $core_values = array(
 
                         <div class="grid sm:grid-cols-2 gap-x-8 gap-y-6">
                             <?php foreach ($core_values as $index => $core_value) : ?>
-                                <div class="flex items-start space-x-3 group" data-about-reveal="left-sm" data-about-delay="<?php echo esc_attr((string) ($index * 100)); ?>" data-about-replay>
+                                <div class="flex items-start space-x-3 group transition-all duration-500 ease-out"
+                                     x-data="{ shown: false }"
+                                     x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                                     :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'"
+                                     style="transition-delay: <?php echo esc_attr((string) ($index * 100)); ?>ms;">
                                     <svg class="w-5 h-5 text-gray-300 group-hover:text-[#228B22] transition-colors shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

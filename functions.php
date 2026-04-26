@@ -37,6 +37,19 @@ function tailpress(): TailPress\Framework\Theme
 tailpress();
 
 /**
+ * Ensure Vite-compiled scripts are loaded as ES modules.
+ * This resolves the "Cannot use import statement outside a module" error.
+ */
+add_filter('script_loader_tag', function($tag, $handle, $src) {
+    if (strpos($handle, 'tailpress-') === 0 || 'vite-client' === $handle) {
+        return '<script type="module" src="' . esc_url($src) . '" id="' . $handle . '-js"></script>';
+    }
+    return $tag;
+}, 10, 3);
+
+
+
+/**
  * Keep generated image sizes lean for constrained storage environments.
  *
  * @param array<string, array<string, int|string>> $sizes Generated intermediate sizes.

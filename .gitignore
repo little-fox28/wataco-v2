@@ -66,3 +66,20 @@ Desktop.ini
 # Coverage reports
 /coverage
 /.nyc_output
+
+# =============================================================
+# LOCAL-ONLY: MCP Servers & Build Tooling
+# These files power the local dev environment and must NEVER
+# be deployed to the production server (1 Core / 1GB RAM).
+# =============================================================
+mcp-servers.json
+.mcp.json
+mcp.json
+package.json
+package-lock.json
+vite.config.mjs
+vite.config.js
+vite.config.ts
+safelist.txt
+README_MCP.md
+/tests

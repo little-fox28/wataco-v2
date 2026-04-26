@@ -38,8 +38,11 @@ $culture_items = apply_filters('wataco_about_culture_template_items', $culture_i
 <?php do_action('wataco_before_about_culture_section', $culture_items); ?>
 <section class="py-20 lg:py-32 bg-white border-b border-gray-100 overflow-hidden">
     <div class="max-w-[1440px] mx-auto px-6">
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8" data-about-stagger-container>
-            <div data-about-stagger-item>
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+            <div x-data="{ shown: false }"
+                 x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                 class="transition-all duration-700 ease-out"
+                 :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
                 <h3 class="text-[#228B22] font-black text-sm uppercase tracking-[0.5em] font-heading mb-3">
                     <?php echo esc_html($culture_subtitle); ?>
                 </h3>
@@ -47,14 +50,23 @@ $culture_items = apply_filters('wataco_about_culture_template_items', $culture_i
                     <?php echo esc_html($culture_title); ?>
                 </h2>
             </div>
-            <p class="text-gray-500 max-w-md font-light" data-about-stagger-item>
+            <p class="text-gray-500 max-w-md font-light transition-all duration-700 ease-out"
+               x-data="{ shown: false }"
+               x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+               :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+               style="transition-delay: 100ms;">
                 <?php echo esc_html($culture_description); ?>
             </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 auto-rows-[250px] gap-4 lg:gap-6" data-about-stagger-container>
-            <?php foreach ($culture_items as $culture_item) : ?>
-                <article class="relative rounded-2xl overflow-hidden group cursor-pointer focus-within:ring-2 focus-within:ring-[#FFD700] <?php echo esc_attr((string) ($culture_item['span'] ?? 'md:col-span-1 md:row-span-1')); ?>" data-about-stagger-item>
+        <div class="grid grid-cols-1 md:grid-cols-3 auto-rows-[250px] gap-4 lg:gap-6">
+            <?php foreach ($culture_items as $i => $culture_item) : ?>
+                <article
+                    class="relative rounded-2xl overflow-hidden group cursor-pointer focus-within:ring-2 focus-within:ring-[#FFD700] transition-all duration-700 ease-out <?php echo esc_attr((string) ($culture_item['span'] ?? 'md:col-span-1 md:row-span-1')); ?>"
+                    x-data="{ shown: false }"
+                    x-intersect:enter="shown = true" x-intersect:leave="shown = false"
+                    :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
+                    style="transition-delay: <?php echo esc_attr((string) ($i * 100)); ?>ms;">
                     <img
                         src="<?php echo esc_url((string) ($culture_item['img'] ?? '')); ?>"
                         alt="<?php echo esc_attr((string) ($culture_item['title'] ?? '')); ?>"
