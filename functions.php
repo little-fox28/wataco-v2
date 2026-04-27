@@ -187,6 +187,33 @@ function wataco_register_polylang_strings() {
     foreach ($about_page_strings as $string) {
         pll_register_string('wataco_about_' . sanitize_title($string), $string, $polylang_languages);
     }
+
+    $projects_page_strings = array(
+        'Project Library',
+        'Vietnam',
+        'International',
+        'All Projects',
+        'No projects found.',
+        'Showing {current} of {total} projects',
+        'Capacity',
+        'Year',
+        'In Progress',
+        'Completed',
+        'Project Implementation',
+        'Process Flow',
+        'PROJECT SURVEY',
+        'PRELIMINARY DESIGN, SIMULATION & ANALYSIS',
+        'FEASIBILITY ASSESSMENT',
+        'SYSTEM DESIGN',
+        'CONSTRUCTION & INSTALLATION',
+        'TESTING & COMMISSIONING',
+        'COMMERCIAL OPERATION & HANDOVER',
+        'OPERATION & MAINTENANCE (O&M)',
+    );
+
+    foreach ($projects_page_strings as $string) {
+        pll_register_string('wataco_projects_' . sanitize_title($string), $string, $polylang_languages);
+    }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
 
@@ -1029,3 +1056,25 @@ require get_template_directory() . '/inc/theme-settings.php';
  * Custom ACF Field Groups
  */
 require get_template_directory() . '/inc/acf-about-us.php';
+
+/**
+ * ACF Local JSON
+ */
+add_filter('acf/settings/save_json', function ($path) {
+    return get_stylesheet_directory() . '/acf-json';
+});
+
+add_filter('acf/settings/load_json', function ($paths) {
+    unset($paths[0]);
+    $paths[] = get_stylesheet_directory() . '/acf-json';
+    return $paths;
+});
+
+/**
+ * Projects ACF & Import
+ */
+require get_template_directory() . '/inc/acf-projects.php';
+
+
+
+
