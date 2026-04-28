@@ -4,24 +4,14 @@ if (!defined('ABSPATH')) {
 }
 
 $footer_data = function_exists('wataco_get_footer_data') ? wataco_get_footer_data() : array();
+$contact_info = wataco_get_global_contact_info();
 
-$linkedin_url = (string) get_option('wataco_social_linkedin', '');
-$facebook_url = (string) get_option('wataco_social_facebook', '');
-
-// Contact info from WATACO Settings page
-$email = (string) get_option('wataco_contact_email', '');
-$phone = (string) get_option('wataco_contact_phone', '');
-
-// Fallback to footer data (ACF) if settings are empty
-if (empty($email)) {
-    $email = (string) ($footer_data['email'] ?? '');
-}
-if (empty($phone)) {
-    $phone = (string) ($footer_data['phone'] ?? '');
-}
-
+$linkedin_url = $contact_info['linkedin'];
+$facebook_url = $contact_info['facebook'];
+$email        = $contact_info['email'];
+$phone        = $contact_info['phone'];
+$footer_social_phone_href = $contact_info['phone_clean'];
 $footer_social_phone = $phone;
-$footer_social_phone_href = preg_replace('/[^0-9+]/', '', $phone);
 
 $footer_description = (string) ($footer_data['company_description'] ?? (function_exists('pll__') ? pll__('Company Description') : ''));
 $address_1 = function_exists('pll__') ? pll__('Address 1 (HQ)') : 'Address 1 (HQ)';
@@ -40,7 +30,7 @@ $title_contact = function_exists('pll__') ? pll__('Tiêu đề footer cột 4') 
         <footer class="bg-[#1A2B3C] text-white pt-24 pb-12 border-t border-white/10 relative overflow-hidden font-jp-style" role="contentinfo">
             <!-- Watermark Logo -->
             <div class="absolute top-0 right-0 p-12 opacity-5 pointer-events-none transform scale-120 origin-top-right">
-                <?php get_template_part('parts/logo', null, array('class' => 'pointer-events-none scale-150 origin-top-right')); ?>
+                <?php get_template_part('parts/components/common/logo', null, array('class' => 'pointer-events-none scale-150 origin-top-right')); ?>
             </div>
 
             <div class="max-w-360 mx-auto px-6 relative z-10">
@@ -49,7 +39,7 @@ $title_contact = function_exists('pll__') ? pll__('Tiêu đề footer cột 4') 
                     
                     <!-- Column 1: Brand -->
                     <div class="space-y-6">
-                        <?php get_template_part('parts/logo', null, array('class' => 'h-10 w-auto')); ?>
+                        <?php get_template_part('parts/components/common/logo', null, array('class' => 'h-10 w-auto')); ?>
 
                         <?php if (!empty($footer_description)) : ?>
                             <p class="text-gray-400 text-sm leading-relaxed max-w-xs">
@@ -75,6 +65,13 @@ $title_contact = function_exists('pll__') ? pll__('Tiêu đề footer cột 4') 
                                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-hidden="true">
                                             <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
                                         </svg>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if (!empty($contact_info['zalo'])) : ?>
+                                <li>
+                                    <a href="<?php echo esc_url($contact_info['zalo']); ?>" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-colors" aria-label="Zalo">
+                                        <span class="text-[10px] font-black tracking-tighter uppercase">Zalo</span>
                                     </a>
                                 </li>
                             <?php endif; ?>
@@ -105,7 +102,7 @@ $title_contact = function_exists('pll__') ? pll__('Tiêu đề footer cột 4') 
                         <!-- Certificates Grid -->
                         <div class="mt-8">
                             <h4 class="text-sm font-semibold text-gray-300 mb-4"><?php echo esc_html(pll__('Certifications')); ?></h4>
-                            <?php get_template_part('parts/certificate-grid'); ?>
+                            <?php get_template_part('parts/components/common/certificate-grid'); ?>
                         </div>
                     </div>
 
@@ -198,7 +195,7 @@ $title_contact = function_exists('pll__') ? pll__('Tiêu đề footer cột 4') 
         </footer>
 
         <!-- Floating Contact Buttons -->
-        <?php get_template_part('parts/floating-contact'); ?>
+        <?php get_template_part('parts/components/common/floating-contact'); ?>
     </div>
 
     <?php wp_footer(); ?>

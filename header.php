@@ -51,7 +51,7 @@ $language_labels = array(
             <!-- Desktop Logo -->
             <div class="hidden lg:block">
                 <?php
-                get_template_part('parts/logo', null, array(
+                get_template_part('parts/components/common/logo', null, array(
                     'show_branding' => true,
                     'class' => ''
                 ));
@@ -89,6 +89,7 @@ $language_labels = array(
 
                 <!-- CTA Button -->
                 <a href="<?php echo esc_url(wataco_get_contact_page_url()); ?>" 
+                   target="_blank" rel="noopener noreferrer"
                    class="bg-white text-[#228B22] px-6 py-2.5 rounded-md text-[10px] font-black tracking-widest hover:scale-105 transition-all uppercase shadow-lg border border-transparent hover:bg-[#FFD700] hover:text-[#1A2B3C] flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -114,7 +115,7 @@ $language_labels = array(
                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div class="pointer-events-none">
                             <?php
-                            get_template_part('parts/logo', null, array(
+                            get_template_part('parts/components/common/logo', null, array(
                                 'show_branding' => true,
                                 'class' => ''
                             ));
@@ -137,7 +138,7 @@ $language_labels = array(
             <?php else : ?>
                 <div class="lg:hidden w-full flex items-center justify-between">
                     <?php
-                    get_template_part('parts/logo', null, array(
+                    get_template_part('parts/components/common/logo', null, array(
                         'show_branding' => true,
                         'class' => ''
                     ));
@@ -229,6 +230,7 @@ $language_labels = array(
 
                 <!-- CTA Button -->
                 <a href="<?php echo esc_url(wataco_get_contact_page_url()); ?>"
+                   target="_blank" rel="noopener noreferrer"
                    class="bg-[#228B22] text-white w-full py-4 rounded-md font-black uppercase tracking-widest min-h-11 flex items-center justify-center hover:bg-[#1a6b1a] transition-colors"
                    @click="mobileMenuOpen = false">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

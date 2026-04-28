@@ -4,6 +4,9 @@ if (is_file(__DIR__.'/vendor/autoload_packages.php')) {
     require_once __DIR__.'/vendor/autoload_packages.php';
 }
 
+// Table of Contents Engine
+require_once __DIR__ . '/inc/toc.php';
+
 function tailpress(): TailPress\Framework\Theme
 {
     return TailPress\Framework\Theme::instance()
@@ -214,6 +217,26 @@ function wataco_register_polylang_strings() {
     foreach ($projects_page_strings as $string) {
         pll_register_string('wataco_projects_' . sanitize_title($string), $string, $polylang_languages);
     }
+
+    // Single post / project page strings
+    $single_page_strings = array(
+        'Home',
+        'Share',
+        'Related Articles',
+        'Need Consultation?',
+        'Our team of experts is ready to help you find the perfect solar energy solution.',
+        'Call Hotline',
+        'Table of Contents',
+        'Updating...',
+        'Published on',
+        'Location',
+        'Production',
+        'Project Information',
+    );
+
+    foreach ($single_page_strings as $string) {
+        pll_register_string('wataco_single_' . sanitize_title($string), $string, $polylang_languages);
+    }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
 
@@ -413,47 +436,6 @@ function wataco_get_about_culture_items() {
     return $culture_items;
 }
 
-/**
- * Initialize Theme Options
- * 
- * Stores default contact and social information in wp_options.
- * Values can be overridden in WordPress admin or programmatically.
- */
-function wataco_init_theme_options() {
-    // Floating Contact Information
-    if (!get_option('wataco_floating_contacts')) {
-        $floating_contacts = array(
-            'facebook' => 'https://www.facebook.com/wataco',
-            'zalo'     => 'https://zalo.me/0359 959 831',
-            'phone'    => '0359 959 831'
-        );
-        add_option('wataco_floating_contacts', $floating_contacts);
-    }
-
-    // Social Links (Footer)
-    if (!get_option('wataco_social_links')) {
-        $social_links = array(
-            'linkedin'  => 'https://linkedin.com/company/wataco',
-            'facebook'  => 'https://www.facebook.com/wataco',
-            'zalo'      => 'https://zalo.me/0359 959 831',
-            'tiktok'    => '',
-            'youtube'   => 'https://youtube.com/@wataco'
-        );
-        add_option('wataco_social_links', $social_links);
-    }
-
-    // Contact Information (Footer)
-    if (!get_option('wataco_contact_info')) {
-        $contact_info = array(
-            'address_1' => '123 Main Street, Ho Chi Minh City, Vietnam',
-            'address_2' => '456 Tech Boulevard, District 1, HCM City',
-            'email'     => 'info@wataco.dev',
-            'phone'     => '0359 959 831'
-        );
-        add_option('wataco_contact_info', $contact_info);
-    }
-}
-add_action('init', 'wataco_init_theme_options', 1);
 
 /**
  * Get Theme Settings page ID for ACF Free field access.
@@ -545,19 +527,19 @@ function wataco_get_theme_settings_option_field($field_name, $default_value = ''
  */
 function wataco_get_footer_data() {
     $theme_settings_page_id = wataco_get_theme_settings_page_id();
-    $social_links = wataco_get_social_links();
-    $contact_info = wataco_get_contact_info();
+    $global = wataco_get_global_contact_info();
+    $social = wataco_get_social_links();
 
     $footer_data = array(
         'global_logo_id'            => (int) wataco_get_theme_settings_field('global_logo', 0),
         'faded_background_logo_id'  => (int) wataco_get_theme_settings_field('faded_background_logo', 0),
-        'email'                     => (string) ($contact_info['email'] ?? ''),
-        'phone'                     => (string) ($contact_info['phone'] ?? ''),
-        'linkedin'                  => (string) ($social_links['linkedin'] ?? ''),
-        'facebook'                  => (string) ($social_links['facebook'] ?? ''),
-        'zalo'                      => (string) ($social_links['zalo'] ?? ''),
-        'tiktok'                    => (string) ($social_links['tiktok'] ?? ''),
-        'youtube'                   => (string) ($social_links['youtube'] ?? ''),
+        'email'                     => $global['email'],
+        'phone'                     => $global['phone'],
+        'linkedin'                  => $global['linkedin'],
+        'facebook'                  => $global['facebook'],
+        'zalo'                      => $global['zalo'],
+        'tiktok'                    => $social['tiktok'],
+        'youtube'                   => $social['youtube'],
         'company_description'       => (string) pll__('Company Description'),
         'address_1'                 => (string) pll__('Address 1 (HQ)'),
         'address_2'                 => (string) pll__('Address 2 (Branch)'),
@@ -574,92 +556,61 @@ function wataco_get_footer_data() {
 }
 
 /**
- * Get first available Theme Settings value from candidate field names.
- *
- * @param array<mixed>  $field_names Candidate field names.
- * @param mixed|string  $default_value Optional default value.
- * @return mixed|string
- */
-function wataco_get_theme_settings_value(array $field_names, $default_value = '') {
-    foreach ($field_names as $field_name) {
-        $value = wataco_get_theme_settings_field((string) $field_name, null);
-        if (null !== $value && false !== $value && '' !== $value) {
-            return $value;
-        }
-    }
-
-    return $default_value;
-}
-
-/**
- * Helper: Get Floating Contact Information
+ * Helper: Get Global Contact Info
  * 
- * @return array Contact information array with facebook, zalo, and phone keys
+ * Retrieves the 5 global contact fields from WATACO Settings.
+ * Generates a clean phone number for hrefs.
+ * 
+ * @return array<string, string>
  */
-function wataco_get_floating_contacts() {
-    return get_option('wataco_floating_contacts', array());
+function wataco_get_global_contact_info() {
+    $phone = get_option('wataco_contact_phone', '0359 959 831');
+    return array(
+        'facebook'    => get_option('wataco_social_facebook', 'https://facebook.com/wataco'),
+        'linkedin'    => get_option('wataco_social_linkedin', 'https://linkedin.com/company/wataco'),
+        'zalo'        => get_option('wataco_social_zalo', 'https://zalo.me/0359959831'),
+        'phone'       => $phone,
+        'phone_clean' => preg_replace('/[^0-9+]/', '', $phone),
+        'email'       => get_option('wataco_contact_email', 'info@wataco.com.vn'),
+    );
 }
 
 /**
  * Helper: Get Social Links
- * 
- * @return array Social links array with linkedin, facebook, and youtube keys
+ *
+ * Delegates to wataco_get_global_contact_info() for the core 3 social links
+ * and adds tiktok/youtube from ACF Theme Settings.
+ *
+ * @return array<string, string> Social links with linkedin, facebook, zalo, tiktok, youtube keys
  */
 function wataco_get_social_links() {
-    $default_social_links = get_option('wataco_social_links', array());
-    $linkedin_option = (string) get_option('wataco_social_linkedin', '');
-    $facebook_option = (string) get_option('wataco_social_facebook', '');
-    $zalo_option = (string) get_option('wataco_social_zalo', '');
-    $tiktok_option = (string) wataco_get_theme_settings_option_field('tiktok', '');
-    $youtube_option = (string) wataco_get_theme_settings_option_field('youtube', '');
+    $global = wataco_get_global_contact_info();
 
     return array(
-        'linkedin' => $linkedin_option !== '' ? $linkedin_option : wataco_get_theme_settings_value(
-            array('social_linkedin', 'footer_social_linkedin', 'linkedin_url', 'linkedin'),
-            $default_social_links['linkedin'] ?? ''
-        ),
-        'facebook' => $facebook_option !== '' ? $facebook_option : wataco_get_theme_settings_value(
-            array('social_facebook', 'footer_social_facebook', 'facebook_url', 'facebook'),
-            $default_social_links['facebook'] ?? ''
-        ),
-        'zalo'     => $zalo_option !== '' ? $zalo_option : wataco_get_theme_settings_value(
-            array('social_zalo', 'footer_social_zalo', 'zalo_url', 'zalo'),
-            $default_social_links['zalo'] ?? ''
-        ),
-        'tiktok'   => $tiktok_option !== '' ? $tiktok_option : wataco_get_theme_settings_value(
-            array('social_tiktok', 'footer_social_tiktok', 'tiktok_url', 'tiktok'),
-            $default_social_links['tiktok'] ?? ''
-        ),
-        'youtube'  => $youtube_option !== '' ? $youtube_option : wataco_get_theme_settings_value(
-            array('social_youtube', 'footer_social_youtube', 'youtube_url', 'youtube'),
-            $default_social_links['youtube'] ?? ''
-        ),
+        'linkedin' => $global['linkedin'],
+        'facebook' => $global['facebook'],
+        'zalo'     => $global['zalo'],
+        'tiktok'   => (string) wataco_get_theme_settings_option_field('tiktok', ''),
+        'youtube'  => (string) wataco_get_theme_settings_option_field('youtube', ''),
     );
 }
 
 /**
  * Helper: Get Contact Information
- * 
- * @return array Contact info array with address_1, address_2, email, and phone keys
+ *
+ * Delegates to wataco_get_global_contact_info() for phone/email
+ * and adds Polylang-translated addresses.
+ *
+ * @return array<string, string> Contact info with address_1, address_2, email, phone keys
  */
 function wataco_get_contact_info() {
-    $default_contact_info = get_option('wataco_contact_info', array());
-    $address_1 = function_exists('pll__') ? pll__('Address 1 (HQ)') : '';
-    $address_2 = function_exists('pll__') ? pll__('Address 2 (Branch)') : '';
-    $email_option = (string) wataco_get_theme_settings_option_field('email', '');
-    $phone_option = (string) get_option('wataco_contact_phone', '');
+    $global = wataco_get_global_contact_info();
 
     return apply_filters('wataco_contact_info', array(
-        'address_1' => $address_1,
-        'address_2' => $address_2,
-        'email'     => $email_option !== '' ? $email_option : wataco_get_theme_settings_value(
-            array('contact_email', 'footer_email', 'email'),
-            $default_contact_info['email'] ?? ''
-        ),
-        'phone'     => $phone_option !== '' ? $phone_option : wataco_get_theme_settings_value(
-            array('contact_phone', 'footer_phone', 'phone'),
-            $default_contact_info['phone'] ?? ''
-        ),
+        'address_1' => function_exists('pll__') ? pll__('Address 1 (HQ)') : '',
+        'address_2' => function_exists('pll__') ? pll__('Address 2 (Branch)') : '',
+        'email'     => $global['email'],
+        'phone'     => $global['phone'],
     ));
 }
 
@@ -678,7 +629,7 @@ function wataco_get_current_year() {
  * @return string Contact page URL
  */
 function wataco_get_contact_page_url() {
-    return home_url('/contact/');
+    return wataco_get_global_contact_info()['zalo'];
 }
 
 /**
@@ -1074,7 +1025,3 @@ add_filter('acf/settings/load_json', function ($paths) {
  * Projects ACF & Import
  */
 require get_template_directory() . '/inc/acf-projects.php';
-
-
-
-

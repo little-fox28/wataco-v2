@@ -10,16 +10,12 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$facebook_url = (string) get_option('wataco_social_facebook', '');
-$zalo_url = (string) get_option('wataco_social_zalo', '');
-$phone_fallback = (string) get_option('wataco_contact_phone', '');
-$phone = (function_exists('pll__')) ? (string) pll__('wataco_footer_phone') : $phone_fallback;
+$contact_info = wataco_get_global_contact_info();
 
-if ($phone === 'wataco_footer_phone') {
-    $phone = $phone_fallback;
-}
-
-$phone_href = preg_replace('/[^0-9+]/', '', $phone);
+$facebook_url = $contact_info['facebook'];
+$zalo_url     = $contact_info['zalo'];
+$phone        = $contact_info['phone'];
+$phone_href   = $contact_info['phone_clean'];
 
 if (empty($facebook_url) && empty($zalo_url) && empty($phone_href)) {
     return;

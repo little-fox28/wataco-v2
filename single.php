@@ -1,24 +1,33 @@
 <?php
 /**
- * Single post template file.
+ * Single post template — Universal wrapper for ALL post types.
  *
- * @package TailPress
+ * Strategy:
+ * - Detects if the current post belongs to the translated "Projects" category tree
+ *   using Polylang-compatible `get_term_by('slug', 'projects', 'category')`.
+ * - Routes to the appropriate template partial:
+ *   • Project posts  → parts/pages/single-project.php
+ *   • Default posts  → parts/pages/single-post.php
+ *
+ * Progressive Enhancement:
+ * - All content is server-rendered and readable before JS executes.
+ * - Alpine.js enhances interactivity (progress bar, smooth scroll TOC).
+ *
+ * @package Wataco
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 get_header();
-?>
 
-<div class="container my-8 mx-auto">
-    <?php if (have_posts()): ?>
-        <?php while (have_posts()): the_post(); ?>
-            <?php get_template_part('template-parts/content', 'single'); ?>
+if (have_posts()) :
+    while (have_posts()) : the_post();
 
-            <?php if (comments_open() || get_comments_number()): ?>
-                <?php comments_template(); ?>
-            <?php endif; ?>
-        <?php endwhile; ?>
-    <?php endif; ?>
-</div>
+        get_template_part('parts/pages/single', 'post');
 
-<?php
+    endwhile;
+endif;
+
 get_footer();
