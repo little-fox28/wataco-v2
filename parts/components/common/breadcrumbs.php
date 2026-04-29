@@ -18,11 +18,37 @@ $category_link = '#';
 $category_name = '';
 
 if (is_singular('post')) {
+    $post_id = get_the_ID();
+    $current_lang = function_exists('pll_current_language') ? (string) pll_current_language('slug') : '';
+    $posts_page_url = function_exists('wataco_get_localized_posts_page_url') ? (string) wataco_get_localized_posts_page_url() : '';
+    $posts_page_title = '';
+    $posts_page_id = (int) get_option('page_for_posts');
+
+    if ($posts_page_id > 0) {
+        if ($current_lang !== '' && function_exists('pll_get_post')) {
+            $translated_posts_page_id = (int) pll_get_post($posts_page_id, $current_lang);
+            if ($translated_posts_page_id > 0) {
+                $posts_page_id = $translated_posts_page_id;
+            }
+        }
+
+        $resolved_posts_page_title = get_the_title($posts_page_id);
+        if (is_string($resolved_posts_page_title) && $resolved_posts_page_title !== '') {
+            $posts_page_title = $resolved_posts_page_title;
+        }
+    }
+
+    // Imported TS news posts should always breadcrumb back to localized Posts Page.
+    if (metadata_exists('post', $post_id, '_wataco_news_source_id') && $posts_page_url !== '') {
+        $category_link = $posts_page_url;
+        $category_name = $posts_page_title !== '' ? $posts_page_title : ($pll ? pll__('News') : 'News');
+    }
+
     $categories = get_the_category();
-    if (!empty($categories)) {
+    if (empty($category_name) && !empty($categories)) {
         $section_slug_map = array(
             'careers'  => array('careers', 'careers-vn', 'careers-en', 'careers-ja', 'tuyen-dung', 'tuyen-dung-vn'),
-            'news'     => array('news', 'news-en', 'news-ja', 'tin-tuc', 'tin-tuc-vn'),
+            'news'     => array('news', 'news-en', 'news-ja', 'tin-tuc', 'tin-tuc-vn', 'ニュース'),
             'projects' => array('projects', 'projects-vn', 'projects-en', 'projects-ja', 'du-an', 'quoc-te', 'international', 'trong-nuoc', 'vietnam-vn'),
         );
 
@@ -47,7 +73,6 @@ if (is_singular('post')) {
             ),
         );
 
-        $current_lang = function_exists('pll_current_language') ? (string) pll_current_language('slug') : '';
         $matched_section = '';
         $primary_category = $categories[0];
         $top_parent = $primary_category;
@@ -68,7 +93,13 @@ if (is_singular('post')) {
                 }
 
                 foreach ($section_slug_map as $section_key => $section_slugs) {
-                    if (in_array($term->slug, $section_slugs, true)) {
+                    $term_slug_raw = (string) $term->slug;
+                    $term_slug_decoded = urldecode($term_slug_raw);
+                    if (
+                        in_array($term_slug_raw, $section_slugs, true)
+                        || in_array($term_slug_decoded, $section_slugs, true)
+                        || in_array(sanitize_title($term_slug_decoded), $section_slugs, true)
+                    ) {
                         $matched_section = $section_key;
                         break 3;
                     }
@@ -77,6 +108,11 @@ if (is_singular('post')) {
         }
 
         if ($matched_section !== '' && isset($section_page_paths[$matched_section])) {
+            if ($matched_section === 'news' && $posts_page_url !== '') {
+                $category_link = $posts_page_url;
+                $category_name = $posts_page_title !== '' ? $posts_page_title : ($pll ? pll__('News') : 'News');
+            }
+
             $path_candidates = array();
             if ($current_lang !== '' && isset($section_page_paths[$matched_section][$current_lang])) {
                 $path_candidates = $section_page_paths[$matched_section][$current_lang];
@@ -84,25 +120,27 @@ if (is_singular('post')) {
             $path_candidates = array_merge($path_candidates, $section_page_paths[$matched_section]['default']);
             $path_candidates = array_values(array_unique(array_filter($path_candidates)));
 
-            foreach ($path_candidates as $path_slug) {
-                $page = get_page_by_path($path_slug, OBJECT, 'page');
-                if (!$page instanceof WP_Post) {
-                    continue;
-                }
-
-                $page_id = (int) $page->ID;
-                if ($current_lang !== '' && function_exists('pll_get_post')) {
-                    $translated_page_id = (int) pll_get_post($page_id, $current_lang);
-                    if ($translated_page_id > 0) {
-                        $page_id = $translated_page_id;
+            if (empty($category_name)) {
+                foreach ($path_candidates as $path_slug) {
+                    $page = get_page_by_path($path_slug, OBJECT, 'page');
+                    if (!$page instanceof WP_Post) {
+                        continue;
                     }
-                }
 
-                $permalink = get_permalink($page_id);
-                if ($permalink) {
-                    $category_link = $permalink;
-                    $category_name = get_the_title($page_id);
-                    break;
+                    $page_id = (int) $page->ID;
+                    if ($current_lang !== '' && function_exists('pll_get_post')) {
+                        $translated_page_id = (int) pll_get_post($page_id, $current_lang);
+                        if ($translated_page_id > 0) {
+                            $page_id = $translated_page_id;
+                        }
+                    }
+
+                    $permalink = get_permalink($page_id);
+                    if ($permalink) {
+                        $category_link = $permalink;
+                        $category_name = get_the_title($page_id);
+                        break;
+                    }
                 }
             }
         }

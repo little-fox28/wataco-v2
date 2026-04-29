@@ -8,6 +8,24 @@
 get_header();
 ?>
 
+<?php
+$news_archive_slugs = array('news', 'tin-tuc', 'tin-tuc-vi', 'news-en', 'news-ja', 'ニュース');
+$is_news_archive = is_home();
+
+if (!$is_news_archive && is_category()) {
+	$queried_term = get_queried_object();
+	if ($queried_term instanceof WP_Term) {
+		$term_slug = (string) $queried_term->slug;
+		if (in_array($term_slug, $news_archive_slugs, true) || in_array(sanitize_title($term_slug), $news_archive_slugs, true)) {
+			$is_news_archive = true;
+		}
+	}
+}
+?>
+
+<?php if ($is_news_archive): ?>
+	<?php get_template_part('parts/pages/news'); ?>
+<?php else: ?>
 <div class="container mx-auto space-y-24 lg:space-y-32">
 	<?php if (!is_singular()): ?>
 		<?php if (is_archive()): ?>
@@ -75,6 +93,7 @@ get_header();
         <?php TailPress\Pagination::render(); ?>
     <?php endif; ?>
 </div>
+<?php endif; ?>
 
 <?php
 get_footer();

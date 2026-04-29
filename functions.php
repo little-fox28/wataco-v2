@@ -279,6 +279,23 @@ function wataco_register_polylang_strings() {
     foreach ($careers_page_strings as $string) {
         pll_register_string('wataco_careers_' . sanitize_title($string), $string, $polylang_languages);
     }
+
+    $news_page_strings = array(
+        'Featured News',
+        'Read More',
+        'No results found.',
+        'Clear filter',
+        'Load More',
+        'Search news...',
+        'Most Read',
+        'Hot Topics',
+        'All News',
+        'Partnerships & Projects',
+    );
+
+    foreach ($news_page_strings as $string) {
+        pll_register_string('wataco_news_' . sanitize_title($string), $string, $polylang_languages);
+    }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
 
@@ -762,6 +779,7 @@ function wataco_get_cached_nav_menu_markup($args) {
         'depth'          => (int) ($menu_args['depth'] ?? 1),
         'link_before'    => (string) ($menu_args['link_before'] ?? ''),
         'link_after'     => (string) ($menu_args['link_after'] ?? ''),
+        'link_localizer' => 'v1',
         'lang'           => $language_token,
     );
     $cache_suffix = substr(md5(wp_json_encode($cache_context)), 0, 12);
@@ -792,6 +810,92 @@ function wataco_get_cached_nav_menu_markup($args) {
 
     return $menu_markup;
 }
+
+/**
+ * Resolve current-language posts page URL (Polylang-aware).
+ *
+ * @return string
+ */
+function wataco_get_localized_posts_page_url() {
+    $posts_page_id = (int) get_option('page_for_posts');
+    if ($posts_page_id <= 0) {
+        return '';
+    }
+
+    $target_page_id = $posts_page_id;
+    if (function_exists('pll_current_language') && function_exists('pll_get_post')) {
+        $current_language = (string) pll_current_language('slug');
+        if ($current_language !== '') {
+            $translated_page_id = (int) pll_get_post($posts_page_id, $current_language);
+            if ($translated_page_id > 0) {
+                $target_page_id = $translated_page_id;
+            }
+        }
+    }
+
+    $permalink = get_permalink($target_page_id);
+    return is_string($permalink) ? $permalink : '';
+}
+
+/**
+ * Determine whether nav menu item points to the configured posts page.
+ *
+ * @param WP_Post $item Menu item object.
+ * @return bool
+ */
+function wataco_is_posts_page_menu_item($item) {
+    if (!$item instanceof WP_Post) {
+        return false;
+    }
+
+    $posts_page_id = (int) get_option('page_for_posts');
+    if ($posts_page_id <= 0) {
+        return false;
+    }
+
+    $candidate_ids = array($posts_page_id);
+    if (function_exists('pll_get_post_translations')) {
+        $translations = pll_get_post_translations($posts_page_id);
+        if (is_array($translations)) {
+            foreach ($translations as $translation_id) {
+                $candidate_ids[] = (int) $translation_id;
+            }
+        }
+    }
+
+    $menu_object_id = isset($item->object_id) ? (int) $item->object_id : 0;
+    $menu_object = isset($item->object) ? (string) $item->object : '';
+
+    return $menu_object === 'page' && in_array($menu_object_id, array_unique($candidate_ids), true);
+}
+
+/**
+ * Force primary menu posts-page item to current-language URL.
+ *
+ * @param array<string,string> $atts Anchor attributes.
+ * @param WP_Post              $item Menu item object.
+ * @param stdClass             $args Menu args.
+ * @param int                  $depth Menu depth.
+ * @return array<string,string>
+ */
+function wataco_primary_menu_posts_link_attributes($atts, $item, $args, $depth) {
+    if (empty($args->theme_location) || $args->theme_location !== 'primary_menu') {
+        return $atts;
+    }
+
+    if (!wataco_is_posts_page_menu_item($item)) {
+        return $atts;
+    }
+
+    $localized_posts_url = wataco_get_localized_posts_page_url();
+    if ($localized_posts_url === '') {
+        return $atts;
+    }
+
+    $atts['href'] = esc_url($localized_posts_url);
+    return $atts;
+}
+add_filter('nav_menu_link_attributes', 'wataco_primary_menu_posts_link_attributes', 20, 4);
 
 /**
  * Resolve page-part slug from current page context.
