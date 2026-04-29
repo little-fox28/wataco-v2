@@ -15,14 +15,19 @@ if (!defined('ABSPATH')) {
 }
 
 // ─── Query all project posts (Polylang auto-filters by language) ───
-$projects_cat = get_term_by('slug', 'projects', 'category');
-$projects_cat_id = $projects_cat ? $projects_cat->term_id : 0;
+
+$base_cat_id = 44; 
+$translated_cat_id = $base_cat_id;
+if ( function_exists('pll_get_term') ) {
+    $translated_cat_id = pll_get_term( $base_cat_id, pll_current_language() );
+}
 
 $projects_query = new WP_Query(array(
     'post_type'      => 'post',
     'posts_per_page' => -1,
     'post_status'    => 'publish',
-    'cat'            => $projects_cat_id,
+    'no_found_rows'  => true,
+    'cat'            => $translated_cat_id,
 ));
 
 // ─── Build project data array for Alpine JSON + PHP card rendering ───

@@ -7,6 +7,9 @@ if (is_file(__DIR__.'/vendor/autoload_packages.php')) {
 // Table of Contents Engine
 require_once __DIR__ . '/inc/toc.php';
 
+// Polylang Careers Strings
+require_once __DIR__ . '/inc/polylang-careers.php';
+
 function tailpress(): TailPress\Framework\Theme
 {
     return TailPress\Framework\Theme::instance()
@@ -232,10 +235,49 @@ function wataco_register_polylang_strings() {
         'Location',
         'Production',
         'Project Information',
+        'Project Details',
     );
 
     foreach ($single_page_strings as $string) {
         pll_register_string('wataco_single_' . sanitize_title($string), $string, $polylang_languages);
+    }
+
+    // Careers page strings
+    $careers_page_strings = array(
+        'Join Our Team',
+        'Shape the Future of',
+        'Solar Energy',
+        'We are looking for passionate individuals to join our mission of building a sustainable future.',
+        'View Open Roles',
+        'Our Values',
+        'Life at WATACO',
+        'We foster a culture of innovation, collaboration, and continuous growth.',
+        'Safety First',
+        'Uncompromising commitment to safety in all our operations.',
+        'Integrity',
+        'Transparent and honest in every interaction.',
+        'Innovation',
+        'Continuously improving our technologies and processes.',
+        'Sustainability',
+        'Dedicated to environmental stewardship.',
+        'Excellence',
+        'Delivering the highest quality in everything we do.',
+        'Open Positions',
+        'Join us in making a difference',
+        'Search jobs...',
+        'All Departments',
+        'Engineering',
+        'Operations',
+        'Sales',
+        'No open positions found matching your criteria.',
+        'View All Jobs',
+        'Urgent',
+        'Deadline: ',
+        'Apply Now',
+    );
+
+    foreach ($careers_page_strings as $string) {
+        pll_register_string('wataco_careers_' . sanitize_title($string), $string, $polylang_languages);
     }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);

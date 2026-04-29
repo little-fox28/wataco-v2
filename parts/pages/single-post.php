@@ -66,7 +66,7 @@ $t_capacity        = $pll ? pll__('Capacity') : 'Capacity';
 $t_year            = $pll ? pll__('Year') : 'Year';
 $t_production      = $pll ? pll__('Production') : 'Production';
 $t_location        = $pll ? pll__('Location') : 'Location';
-$t_project_info    = $pll ? pll__('Project Information') : 'Project Information';
+$t_project_info    = $pll ? pll__('Project Details') : 'Project Details';
 $t_status_label    = ($is_project && !empty($status)) ? ($pll ? pll__($status) : $status) : '';
 
 $global_contact = wataco_get_global_contact_info();
@@ -88,13 +88,13 @@ $zalo_url     = $global_contact['zalo'] ?: '#';
     <?php if (!empty($hero_url)) : ?>
         <div class="absolute inset-0 -z-10">
             <img src="<?php echo esc_url($hero_url); ?>" alt="<?php echo esc_attr($title); ?>" class="w-full h-full object-cover opacity-60 mix-blend-overlay" />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#F8FAFC] via-transparent to-transparent"></div>
+            <div class="absolute inset-0 bg-linear-to-t from-[#F8FAFC] via-transparent to-transparent"></div>
         </div>
     <?php else : ?>
-        <div class="absolute inset-0 -z-10 bg-gradient-to-br from-[#1A2B3C] to-[#0f1b27]"></div>
+        <div class="absolute inset-0 -z-10 bg-linear-to-br from-[#1A2B3C] to-[#0f1b27]"></div>
     <?php endif; ?>
 
-    <div class="relative z-10 w-full max-w-[1440px] mx-auto px-6" x-data="{ shown: false }" x-intersect.once="shown = true">
+    <div class="relative z-10 w-full max-w-360 mx-auto px-6" x-data="{ shown: false }" x-intersect.once="shown = true">
 
         <!-- Semantic Breadcrumbs -->
         <?php get_template_part('parts/components/common/breadcrumbs'); ?>
@@ -128,7 +128,7 @@ $zalo_url     = $global_contact['zalo'] ?: '#';
 </section>
 
 <!-- ═══ MAIN CONTENT & SIDEBAR GRID ═══ -->
-<section class="w-full max-w-[1440px] mx-auto px-6 mt-8 lg:mt-12 pb-16">
+<section class="w-full max-w-360 mx-auto px-6 mt-8 lg:mt-12 pb-16">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
 
         <!-- Left Column: Article Body -->
@@ -190,15 +190,15 @@ $zalo_url     = $global_contact['zalo'] ?: '#';
                 <span class="text-sm font-bold text-gray-400 uppercase tracking-widest"><?php echo esc_html($t_share); ?></span>
                 <div class="flex items-center gap-3">
                     <a  href="<?php echo esc_url($facebook_url); ?>" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition-colors" aria-label="Share on Facebook">
-                        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg>
+                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path></svg>
                     </a>
                     <a  href="<?php echo esc_url($linkedin_url); ?>" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-full bg-[#0A66C2]/10 text-[#0A66C2] flex items-center justify-center hover:bg-[#0A66C2] hover:text-white transition-colors" aria-label="Share on LinkedIn">
-                        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"></path></svg>
+                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"></path></svg>
                     </a>
                     <button @click="navigator.clipboard.writeText('<?php echo esc_js($permalink); ?>'); copied = true; setTimeout(() => copied = false, 2000)"
                             class="w-10 h-10 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center hover:bg-[#1A2B3C] hover:text-white transition-colors relative"
                             aria-label="Copy link">
-                        <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
+                        <svg class="w-4.5 h-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"></path></svg>
                         <span x-show="copied" x-transition class="absolute -top-8 bg-[#1A2B3C] text-white text-[10px] px-2 py-1 rounded whitespace-nowrap">Copied!</span>
                     </button>
                 </div>
