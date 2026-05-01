@@ -9,49 +9,37 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$slider_cta = function_exists('get_field') ? get_field('home_hero_slider_cta') : '';
-if (!is_string($slider_cta) || '' === trim($slider_cta)) {
-    $slider_cta = 'Get Consultation';
-}
-
-$slides = array();
-if (function_exists('have_rows') && have_rows('home_hero_slides')) {
-    while (have_rows('home_hero_slides')) {
-        the_row();
-        $slide_title = get_sub_field('title');
-        $slide_description = get_sub_field('description');
-
-        if (!is_string($slide_title) || '' === trim($slide_title)) {
-            continue;
-        }
-
-        $slides[] = array(
-            'title'       => trim($slide_title),
-            'description' => is_string($slide_description) ? trim($slide_description) : '',
-        );
+// Ensure Polylang functions exist
+if (!function_exists('pll__')) {
+    function pll__($string) {
+        return $string;
     }
 }
 
-if (empty($slides)) {
-    $slides = array(
-        array(
-            'title'       => "LEADING ENTERPRISE\nIN RENEWABLE ENERGY",
-            'description' => 'Wataco partners with businesses in Vietnam and Japan to drive dual transformation toward Net-Zero.',
-        ),
-        array(
-            'title'       => "FLEXIBLE COOPERATION MODEL:\nZERO CAPEX SOLAR",
-            'description' => 'Zero upfront rooftop solar solutions designed for businesses.',
-        ),
-        array(
-            'title'       => "INVESTMENT & DEVELOPMENT\nOF RENEWABLE ENERGY PROJECTS",
-            'description' => 'A trusted investor for commercial and industrial rooftop solar projects.',
-        ),
-        array(
-            'title'       => "DUAL TRANSFORMATION SOLUTION:\nDIGITAL SHIFT - GREEN SHIFT",
-            'description' => 'We support businesses on the journey to 100% renewable energy and Net-Zero with internationally aligned digital roadmaps.',
-        ),
-    );
-}
+$slides = array(
+    array(
+        'title_white'  => pll__('LEADING ENTERPRISE'),
+        'title_yellow' => pll__('IN RENEWABLE ENERGY'),
+        'description'  => pll__('Wataco partners with businesses in Vietnam and Japan to drive dual transformation toward Net-Zero.'),
+    ),
+    array(
+        'title_white'  => pll__('FLEXIBLE COOPERATION MODEL:'),
+        'title_yellow' => pll__('ZERO CAPEX SOLAR'),
+        'description'  => pll__('Zero upfront rooftop solar solutions designed for businesses.'),
+    ),
+    array(
+        'title_white'  => pll__('INVESTMENT & DEVELOPMENT'),
+        'title_yellow' => pll__('OF RENEWABLE ENERGY PROJECTS'),
+        'description'  => pll__('A trusted investor for commercial and industrial rooftop solar projects.'),
+    ),
+    array(
+        'title_white'  => pll__('DUAL TRANSFORMATION SOLUTION:'),
+        'title_yellow' => pll__('DIGITAL SHIFT - GREEN SHIFT'),
+        'description'  => pll__('We support businesses on the journey to 100% renewable energy and Net-Zero with internationally aligned digital roadmaps.'),
+    ),
+);
+
+$slider_cta = pll__('Get Consultation');
 ?>
 
 <section id="section-0" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1A2B3C]">
@@ -74,21 +62,17 @@ if (empty($slides)) {
         <div
             x-data='{
                 heroIndex: 0,
-                animationSeed: 0,
                 slides: <?php echo esc_attr((string) wp_json_encode($slides, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)); ?>,
                 setSlide(nextIndex) {
                     if (!this.slides.length) {
                         return;
                     }
-
                     this.heroIndex = (nextIndex + this.slides.length) % this.slides.length;
-                    this.animationSeed++;
                 },
                 init() {
                     if (!this.slides.length) {
                         return;
                     }
-
                     setInterval(() => {
                         this.setSlide(this.heroIndex + 1);
                     }, 6000);
@@ -107,17 +91,22 @@ if (empty($slides)) {
                         x-transition:leave-end="opacity-0 -translate-y-5"
                         class="max-w-5xl absolute inset-0"
                         style="display: none;">
-                        <h1 class="text-4xl sm:text-5xl lg:text-[56px] font-black text-white leading-[1.2] mb-6 tracking-tight font-heading uppercase">
-                            <template x-for="(line, lineIndex) in (slide.title ? slide.title.split('\n') : [])" :key="'line-' + idx + '-' + lineIndex + '-' + animationSeed">
-                                <span class="block overflow-hidden pb-2">
-                                    <span
-                                        class="block home-hero-line-in"
-                                        :class="lineIndex === ((slide.title ? slide.title.split('\n').length : 1) - 1) ? 'text-[#FFD700]' : ''"
-                                        :style="'animation-delay:' + (lineIndex * 150) + 'ms'"
-                                        x-text="line">
-                                    </span>
+                        
+                        <h1 class="text-4xl sm:text-5xl lg:text-[56px] font-black leading-[1.2] mb-6 tracking-tight font-heading uppercase">
+                            <span class="block overflow-hidden pb-2">
+                                <span
+                                    class="block home-hero-line-in text-white"
+                                    style="animation-delay: 0ms"
+                                    x-text="slide.title_white">
                                 </span>
-                            </template>
+                            </span>
+                            <span class="block overflow-hidden pb-2">
+                                <span
+                                    class="block home-hero-line-in text-[#FFD700]"
+                                    style="animation-delay: 150ms"
+                                    x-text="slide.title_yellow">
+                                </span>
+                            </span>
                         </h1>
 
                         <p class="text-white text-base lg:text-xl max-w-3xl mb-8 font-medium leading-relaxed border-l-4 border-[#228B22] pl-6 home-hero-desc-in" x-text="slide.description"></p>
@@ -126,9 +115,14 @@ if (empty($slides)) {
             </div>
 
             <div class="flex flex-wrap gap-6 items-center mt-8">
-                <button type="button" class="bg-white text-[#228B22] px-10 py-5 font-black text-xs tracking-widest uppercase hover:bg-[#FFD700] hover:text-[#1A2B3C] transition-all duration-300 rounded-md">
+                <?php $global_contact = function_exists('wataco_get_global_contact_info') ? wataco_get_global_contact_info() : array('zalo' => '#'); ?>
+                <a
+                    href="<?php echo esc_url(isset($global_contact['zalo']) ? $global_contact['zalo'] : '#'); ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="bg-white text-[#228B22] px-10 py-5 font-black text-xs tracking-widest uppercase hover:bg-[#FFD700] hover:text-[#1A2B3C] transition-all duration-300 rounded-md inline-block text-center">
                     <?php echo esc_html($slider_cta); ?>
-                </button>
+                </a>
 
                 <div class="flex gap-3 ml-0 lg:ml-6 mt-4 lg:mt-0">
                     <template x-for="(_, idx) in slides" :key="idx">
@@ -178,4 +172,3 @@ if (empty($slides)) {
     animation: homeHeroDescIn 0.6s ease-out 0.2s both;
 }
 </style>
-

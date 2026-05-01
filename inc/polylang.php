@@ -215,5 +215,27 @@ function wataco_register_polylang_strings() {
     foreach ($news_page_strings as $string) {
         pll_register_string('wataco_news_' . sanitize_title($string), $string, $polylang_languages);
     }
+
+    // Hero Section Strings
+    $hero_strings = array(
+        'LEADING ENTERPRISE',
+        'IN RENEWABLE ENERGY',
+        'Wataco partners with businesses in Vietnam and Japan to drive dual transformation toward Net-Zero.',
+        'FLEXIBLE COOPERATION MODEL:',
+        'ZERO CAPEX SOLAR',
+        'Zero upfront rooftop solar solutions designed for businesses.',
+        'INVESTMENT & DEVELOPMENT',
+        'OF RENEWABLE ENERGY PROJECTS',
+        'A trusted investor for commercial and industrial rooftop solar projects.',
+        'DUAL TRANSFORMATION SOLUTION:',
+        'DIGITAL SHIFT - GREEN SHIFT',
+        'We support businesses on the journey to 100% renewable energy and Net-Zero with internationally aligned digital roadmaps.',
+        'Get Consultation',
+    );
+
+    foreach ($hero_strings as $string) {
+        $multiline = (strlen($string) > 50);
+        pll_register_string($string, $string, 'wataco_hero', $multiline);
+    }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
