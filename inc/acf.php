@@ -102,6 +102,199 @@ function wataco_register_theme_settings_acf_fields() {
 add_action('acf/init', 'wataco_register_theme_settings_acf_fields');
 
 /**
+ * Register ACF Free field group for Home Solutions.
+ *
+ * @return void
+ */
+function wataco_register_home_solutions_acf_fields() {
+    if (!function_exists('acf_add_local_field_group')) {
+        return;
+    }
+
+    acf_add_local_field_group(array(
+        'key' => 'group_home_solutions',
+        'title' => 'Home: Investment Solutions',
+        'fields' => array(
+            array(
+                'key' => 'field_home_solutions_subtitle',
+                'label' => 'Subtitle',
+                'name' => 'solutions_subtitle',
+                'type' => 'text',
+                'default_value' => 'INVESTMENT SOLUTIONS',
+            ),
+            array(
+                'key' => 'field_home_solutions_title',
+                'label' => 'Title',
+                'name' => 'solutions_title',
+                'type' => 'text',
+                'default_value' => 'Flexible Cooperation Models',
+            ),
+            array(
+                'key' => 'field_home_solutions_data',
+                'label' => 'Solutions Data',
+                'name' => 'solutions_data',
+                'type' => 'repeater',
+                'instructions' => 'Manage the different investment solutions displayed in the section.',
+                'required' => 0,
+                'min' => 0,
+                'max' => 0,
+                'layout' => 'block',
+                'button_label' => 'Add Solution',
+                'sub_fields' => array(
+                    array(
+                        'key' => 'field_home_solutions_id',
+                        'label' => 'ID (Anchor)',
+                        'name' => 'id',
+                        'type' => 'text',
+                        'instructions' => 'Unique ID (e.g. esco, buy, lease)',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_short_title',
+                        'label' => 'Short Title (Tabs)',
+                        'name' => 'short_title',
+                        'type' => 'text',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_full_title',
+                        'label' => 'Full Title',
+                        'name' => 'title',
+                        'type' => 'text',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_desc',
+                        'label' => 'Description',
+                        'name' => 'desc',
+                        'type' => 'textarea',
+                        'rows' => 3,
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_diagram_type',
+                        'label' => 'Diagram Type',
+                        'name' => 'diagram_type',
+                        'type' => 'select',
+                        'choices' => array(
+                            'three-party' => 'Three Party (Triangle)',
+                            'two-party'   => 'Two Party (Line)',
+                        ),
+                        'default_value' => 'three-party',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_role_client',
+                        'label' => 'Role: Client',
+                        'name' => 'role_client',
+                        'type' => 'text',
+                        'default_value' => 'Client',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_role_partner',
+                        'label' => 'Role: Partner',
+                        'name' => 'role_partner',
+                        'type' => 'text',
+                        'default_value' => 'Partner',
+                        'conditional_logic' => array(
+                            array(
+                                array(
+                                    'field' => 'field_home_solutions_diagram_type',
+                                    'operator' => '==',
+                                    'value' => 'three-party',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_flow_wataco_client',
+                        'label' => 'Flow: WATACO to Client',
+                        'name' => 'flow_wataco_client',
+                        'type' => 'text',
+                        'conditional_logic' => array(
+                            array(
+                                array(
+                                    'field' => 'field_home_solutions_diagram_type',
+                                    'operator' => '==',
+                                    'value' => 'three-party',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_flow_partner_wataco',
+                        'label' => 'Flow: Partner to WATACO',
+                        'name' => 'flow_partner_wataco',
+                        'type' => 'text',
+                        'conditional_logic' => array(
+                            array(
+                                array(
+                                    'field' => 'field_home_solutions_diagram_type',
+                                    'operator' => '==',
+                                    'value' => 'three-party',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_flow_client_partner',
+                        'label' => 'Flow: Client to Partner',
+                        'name' => 'flow_client_partner',
+                        'type' => 'text',
+                        'conditional_logic' => array(
+                            array(
+                                array(
+                                    'field' => 'field_home_solutions_diagram_type',
+                                    'operator' => '==',
+                                    'value' => 'three-party',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_flow_client_wataco',
+                        'label' => 'Flow: Client to WATACO',
+                        'name' => 'flow_client_wataco',
+                        'type' => 'text',
+                        'conditional_logic' => array(
+                            array(
+                                array(
+                                    'field' => 'field_home_solutions_diagram_type',
+                                    'operator' => '==',
+                                    'value' => 'two-party',
+                                ),
+                            ),
+                        ),
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_link_slug',
+                        'label' => 'Link Slug',
+                        'name' => 'link_slug',
+                        'type' => 'text',
+                        'instructions' => 'Slug of the post for "View Details" link.',
+                    ),
+                    array(
+                        'key' => 'field_home_solutions_note',
+                        'label' => 'Note',
+                        'name' => 'note',
+                        'type' => 'text',
+                        'instructions' => 'Optional disclaimer or note at the bottom.',
+                    ),
+                ),
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'page_template',
+                    'operator' => '==',
+                    'value' => 'page-templates/template-home.php',
+                ),
+            ),
+        ),
+        'position' => 'normal',
+        'style' => 'default',
+        'active' => true,
+    ));
+}
+add_action('acf/init', 'wataco_register_home_solutions_acf_fields');
+
+/**
  * Build default culture section values for About Us.
  *
  * @return array<string, string>
@@ -228,6 +421,323 @@ function wataco_get_theme_settings_page_id() {
     }
 
     return $theme_settings_page_id;
+}
+
+/**
+ * Get all data for the home page sections.
+ *
+ * @return array<string, mixed>
+ */
+function wataco_get_home_data() {
+    $translate = static function ($text) {
+        return function_exists('pll__') ? (string) pll__($text) : $text;
+    };
+
+    $post_id = get_the_ID();
+
+    $data = array(
+        'stats' => array(
+            array(
+                'prefix' => '+',
+                'val'    => 500,
+                'suffix' => 'MWp',
+                'label'  => $translate('TOTAL CAPACITY'),
+            ),
+            array(
+                'prefix' => '+',
+                'val'    => 10,
+                'suffix' => '',
+                'label'  => $translate('YEARS EXPERIENCE'),
+            ),
+            array(
+                'prefix' => '+',
+                'val'    => 200,
+                'suffix' => '',
+                'label'  => $translate('COMPLETED PROJECTS'),
+            ),
+            array(
+                'prefix' => '',
+                'val'    => 99.9,
+                'suffix' => '%',
+                'label'  => $translate('SYSTEM RELIABILITY'),
+            ),
+        ),
+        'heritage' => array(
+            'subtitle' => $translate('WATANABE CREATE HERITAGE'),
+            'title'    => $translate('The Journey From Sendai To Vietnam'),
+            'content1' => $translate('WATACO was founded on the foundation of WATANABE CREATE Group, Sendai, Japan. Established on December 17, 2015, WATANABE CREATE has achieved many achievements in consulting, design, and construction of solar power projects in Japan, a pioneer in renewable energy technology.'),
+            'content2' => $translate('WATACO was established in 2021 in Vietnam, operating in the field of consulting, design, and construction of solar power projects in Vietnam with the motto "quality creates sustainable prestige". We are committed to providing optimal solutions, suitable to customers\' requirements in every detail.'),
+            'content3' => $translate('In addition, WATACO also aims to develop the field of construction, renovation of houses, and interiors, bringing comfortable and modern living spaces in Vietnam. We always listen to customers\' wishes, create worthy works, and constantly learn, deserving to be the top choice.'),
+        ),
+        'solutions' => array(
+            'subtitle' => function_exists('get_field') && get_field('solutions_subtitle', $post_id) ? $translate(get_field('solutions_subtitle', $post_id)) : $translate('INVESTMENT SOLUTIONS'),
+            'title'    => function_exists('get_field') && get_field('solutions_title', $post_id) ? $translate(get_field('solutions_title', $post_id)) : $translate('Flexible Cooperation Models'),
+            'labels'   => array(
+                'chooseSolution' => $translate('Choose this solution'),
+                'modelTitle'     => $translate('Model'),
+                'detailCta'      => $translate('View Details'),
+            ),
+            'data'     => array(),
+        ),
+        'ppa' => array(
+            'subtitle' => $translate('SOLAR POWER 0 VND'),
+            'title'    => $translate('PPA Cooperation Model'),
+            'desc'     => $translate('Roof-top solar power system with 0 VND investment capital for businesses.'),
+            'benefits' => array(
+                $translate('No investment capital needed'),
+                $translate('Reduce operating costs'),
+                $translate('Green certificates & Carbon credits'),
+                $translate('Comprehensive O&M support'),
+            ),
+            'button'   => $translate('Get Consultation'),
+        ),
+        'epc' => array(
+            'subtitle' => $translate('EPC TOTAL CONTRACTOR'),
+            'title'    => $translate('Professional EPC Management'),
+            'desc'     => $translate('We provide comprehensive EPC (Engineering, Procurement, and Construction) services, ensuring the highest standards of quality and efficiency.'),
+            'image'    => 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200',
+            'quality'  => $translate('Quality Commitment'),
+            'standard' => $translate('Japanese Standard'),
+            'button'   => $translate('View EPC Profile'),
+            'steps'    => array(
+                array('title' => $translate('Consulting & Survey'), 'desc' => $translate('Technical assessment and site feasibility study.')),
+                array('title' => $translate('Design & Engineering'), 'desc' => $translate('Optimized system design using international standards.')),
+                array('title' => $translate('Procurement'), 'desc' => $translate('Selection of Tier-1 equipment and materials.')),
+                array('title' => $translate('Construction'), 'desc' => $translate('Professional installation and safety management.')),
+                array('title' => $translate('O&M'), 'desc' => $translate('System monitoring and maintenance services.')),
+            ),
+        ),
+        'map' => array(
+            'subtitle'    => $translate('OPERATIONAL SCALE'),
+            'title'       => $translate('Project Network'),
+            'description' => $translate('Commitment to quality and outstanding performance across Vietnam with more than 500MWp of total installed capacity.'),
+            'clientTitle' => $translate('Trusted Partners'),
+            'stats'       => array(
+                array(
+                    'label' => $translate('Projects Signed'),
+                    'val'   => 250,
+                    'suffix'=> '+',
+                    'color' => '#3B82F6',
+                    'icon'  => 'file-text'
+                ),
+                array(
+                    'label' => $translate('Total Installed Capacity'),
+                    'val'   => 500,
+                    'suffix'=> ' MWp',
+                    'color' => '#EAB308',
+                    'icon'  => 'zap'
+                ),
+                array(
+                    'label' => $translate('Systems Operating'),
+                    'val'   => 180,
+                    'suffix'=> '+',
+                    'color' => '#228B22',
+                    'icon'  => 'bar-chart'
+                ),
+            ),
+            'locations' => array(
+                array('top' => '15%', 'left' => '45%', 'name' => $translate('Bắc Ninh')),
+                array('top' => '18%', 'left' => '48%', 'name' => $translate('Hải Dương')),
+                array('top' => '20%', 'left' => '40%', 'name' => $translate('Hải Phòng')),
+                array('top' => '48%', 'left' => '50%', 'name' => $translate('Quảng Ngãi')),
+                array('top' => '75%', 'left' => '52%', 'name' => $translate('Lâm Đồng')),
+                array('top' => '80%', 'left' => '58%', 'name' => $translate('Bình Thuận')),
+                array('top' => '85%', 'left' => '40%', 'name' => $translate('Tây Ninh')),
+                array('top' => '87%', 'left' => '45%', 'name' => $translate('Bình Dương')),
+                array('top' => '88%', 'left' => '40%', 'name' => $translate('Đồng Nai')),
+                array('top' => '92%', 'left' => '38%', 'name' => $translate('Long An')),
+            ),
+            'clients' => array(
+                array('name' => 'TH True Milk', 'logo' => 'TH.svg', 'color' => '#013C78'),
+                array('name' => 'ALPHA', 'logo' => 'alpha.svg', 'color' => '#00469B'),
+                array('name' => 'AMANN', 'logo' => 'amann.svg', 'color' => '#028AD2'),
+                array('name' => 'FGC', 'logo' => 'fgc.svg', 'color' => '#42851F'),
+                array('name' => 'HAWA-EXPO', 'logo' => 'hawa-expo.svg', 'color' => '#A13538'),
+                array('name' => 'KAIFA', 'logo' => 'kaifa.svg', 'color' => '#1D2088'),
+                array('name' => 'MKVN', 'logo' => 'mkvn.svg', 'color' => '#00A650'),
+                array('name' => 'RYOBI', 'logo' => 'ryobi.svg', 'color' => '#1456A1'),
+                array('name' => 'STROMAN', 'logo' => 'stroman.svg', 'color' => '#0F75BC'),
+            )
+        ),
+        'projects' => array(
+            'subtitle' => $translate('PROJECTS'),
+            'title'    => $translate('Featured Projects'),
+            'viewMore' => $translate('VIEW PROJECT'),
+            'tabs'     => array(
+                array('id' => 'vietnam', 'label' => $translate('Vietnam')),
+                array('id' => 'international', 'label' => $translate('International')),
+            ),
+            'data'     => array(
+                'vietnam' => array(
+                    array(
+                        'name'     => $translate('TH True Milk Rooftop Solar'),
+                        'location' => $translate('Nghệ An, Vietnam'),
+                        'capacity' => '5.0 MWp',
+                        'year'     => '2023',
+                        'status'   => $translate('Completed'),
+                        'img'      => 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=1200',
+                        'slug'     => 'th-true-milk-solar'
+                    ),
+                    array(
+                        'name'     => $translate('FGC Tea Factory'),
+                        'location' => $translate('Phú Thọ, Vietnam'),
+                        'capacity' => '2.5 MWp',
+                        'year'     => '2022',
+                        'status'   => $translate('Completed'),
+                        'img'      => 'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=1200',
+                        'slug'     => 'fgc-tea-solar'
+                    ),
+                    array(
+                        'name'     => $translate('MKVN Manufacturing'),
+                        'location' => $translate('Bình Dương, Vietnam'),
+                        'capacity' => '1.8 MWp',
+                        'year'     => '2024',
+                        'status'   => $translate('In Progress'),
+                        'img'      => 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&q=80&w=1200',
+                        'slug'     => 'mkvn-solar'
+                    ),
+                ),
+                'international' => array(
+                    array(
+                        'name'     => $translate('Sendai Industrial Park'),
+                        'location' => $translate('Miyagi, Japan'),
+                        'capacity' => '10.0 MWp',
+                        'year'     => '2021',
+                        'status'   => $translate('Completed'),
+                        'img'      => 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200',
+                        'slug'     => 'sendai-industrial-solar'
+                    ),
+                )
+            )
+        ),
+        'mission' => array(
+            'subtitle' => $translate('Strategic Orientation'),
+            'title'    => $translate('Vision, Mission & Core Values'),
+            'vision'   => array(
+                'title' => $translate('Vision'),
+                'desc'  => $translate('Creating a sustainable future through constructing and investing in advanced solar energy in Vietnam, supporting business growth and partnering with the community.'),
+            ),
+            'mission'  => array(
+                'title' => $translate('Mission'),
+                'desc'  => $translate('Providing high-quality, advanced, and environmentally friendly solar energy construction and investment solutions, contributing to enhancing life quality and supporting the sustainable development of businesses in Vietnam.'),
+            ),
+            'values'   => array(
+                'title' => $translate('Core Values'),
+                'items' => array(
+                    $translate('Sustainability and Eco-friendliness'),
+                    $translate('Quality and Innovation'),
+                    $translate('Responsibility and Transparency'),
+                    $translate('Collaboration and Development'),
+                )
+            )
+        ),
+        'services' => array(
+            'subtitle' => $translate('OUR SERVICES'),
+            'title'    => $translate('Comprehensive Energy Solutions'),
+            'items'    => array(
+                array('title' => $translate('Rooftop Solar'), 'icon' => 'sun'),
+                array('title' => $translate('Solar Farm'), 'icon' => 'factory'),
+                array('title' => $translate('O&M Services'), 'icon' => 'wrench'),
+                array('title' => $translate('EPC General Contractor'), 'icon' => 'settings'),
+                array('title' => $translate('Energy Consulting'), 'icon' => 'zap'),
+            )
+        ),
+        'whySolar' => array(
+            'title'   => $translate('Why Choose Solar Energy?'),
+            'tagline' => $translate('Efficient - Sustainable - Future'),
+            'items'   => array(
+                array('title' => $translate('Cost Saving'), 'desc' => $translate('Reduce monthly electricity bills significantly.'), 'icon' => 'wallet'),
+                array('title' => $translate('Eco-friendly'), 'desc' => $translate('Reduce carbon footprint and protect environment.'), 'icon' => 'leaf'),
+                array('title' => $translate('Energy Independence'), 'desc' => $translate('Reduce dependence on the national grid.'), 'icon' => 'shield'),
+                array('title' => $translate('High Durability'), 'desc' => $translate('Long system lifespan with minimal maintenance.'), 'icon' => 'trending-up'),
+            )
+        )
+    );
+
+    // Fetch Solutions Data from ACF if available
+    if (function_exists('get_field') && have_rows('solutions_data', $post_id)) {
+        while (have_rows('solutions_data', $post_id)) {
+            the_row();
+            $data['solutions']['data'][] = array(
+                'id'          => get_sub_field('id'),
+                'shortTitle'  => $translate(get_sub_field('short_title')),
+                'title'       => $translate(get_sub_field('title')),
+                'desc'        => $translate(get_sub_field('desc')),
+                'diagramType' => get_sub_field('diagram_type'),
+                'roles'       => array(
+                    'client'  => $translate(get_sub_field('role_client')),
+                    'partner' => $translate(get_sub_field('role_partner')),
+                ),
+                'flows'       => array(
+                    'watacoToClient'   => $translate(get_sub_field('flow_wataco_client')),
+                    'partnerToWataco' => $translate(get_sub_field('flow_partner_wataco')),
+                    'clientToPartner' => $translate(get_sub_field('flow_client_partner')),
+                    'clientToWataco'  => $translate(get_sub_field('flow_client_wataco')),
+                ),
+                'linkSlug'    => get_sub_field('link_slug'),
+                'note'        => $translate(get_sub_field('note')),
+            );
+        }
+    } else {
+        // Fallback to static data
+        $data['solutions']['data'] = array(
+            array(
+                'id'          => 'esco',
+                'shortTitle'  => $translate('1. ESCO Model'),
+                'title'       => $translate('ESCO (Energy Service Company) Solution'),
+                'desc'        => $translate('The ESCO model uses idle factory rooftops to deploy solar systems. WATACO acts as EPC contractor (engineering, procurement, construction, maintenance, and warranty) to ensure optimal system performance.'),
+                'diagramType' => 'three-party',
+                'roles'       => array('client' => $translate('Client'), 'partner' => $translate('Financial Partner')),
+                'flows'       => array('watacoToClient' => $translate('Consulting, design, EPC, O&M'), 'partnerToWataco' => $translate('Financial disbursement'), 'clientToPartner' => $translate('Monthly electricity payment')),
+                'linkSlug'    => 'giai-phap-esco'
+            ),
+            array(
+                'id'          => 'lease',
+                'shortTitle'  => $translate('2. Rooftop Leasing'),
+                'title'       => $translate('Industrial Rooftop Leasing Solution'),
+                'desc'        => $translate('Businesses with qualified idle rooftops can lease them to increase income. The financial partner covers the full installation cost while WATACO executes as EPC contractor.'),
+                'diagramType' => 'three-party',
+                'roles'       => array('client' => $translate('Client'), 'partner' => $translate('Financial Partner')),
+                'flows'       => array('watacoToClient' => $translate('Installation, operation, maintenance'), 'partnerToWataco' => $translate('Financial disbursement'), 'clientToPartner' => $translate('Receive monthly lease income')),
+                'note'        => $translate('Clients lease idle rooftop space with low risk and can renew leasing or inherit the system after 20 years.'),
+                'linkSlug'    => 'cho-thue-mai-xuong-lap-dien-mat-troi'
+            ),
+            array(
+                'id'          => 'invest',
+                'shortTitle'  => $translate('3. Direct Investment'),
+                'title'       => $translate('Direct Investment Solution'),
+                'desc'        => $translate('Invest once and benefit for over 30 years. By investing in solar, owners can save up to 90% on electricity and may sell surplus electricity to EVN. WATACO provides full EPC to maximize performance.'),
+                'diagramType' => 'two-party',
+                'roles'       => array('client' => $translate('Investor')),
+                'flows'       => array('clientToWataco' => $translate('Full EPC package (consulting, design, construction, warranty)')),
+                'linkSlug'    => 'giai-phap-dau-tu-he-thong-dien-mat-troi-tu-do-tai-chinh'
+            ),
+            array(
+                'id'          => 'finance',
+                'shortTitle'  => $translate('4. Financial Leasing'),
+                'title'       => $translate('Financial Leasing Solution'),
+                'desc'        => $translate('WATACO helps businesses connect with banks offering favorable packages. The business pays only 20% upfront, while the bank finances the remaining 80%. WATACO serves as EPC contractor.'),
+                'diagramType' => 'three-party',
+                'roles'       => array('client' => $translate('Client'), 'partner' => $translate('Bank')),
+                'flows'       => array('watacoToClient' => $translate('Consulting, design, EPC, O&M'), 'partnerToWataco' => $translate('Financial disbursement 80%'), 'clientToPartner' => $translate('Monthly lease payment (principal + interest)')),
+                'note'        => $translate('WATACO partners with trusted banks to provide preferential interest-rate services.'),
+                'linkSlug'    => 'cho-thue-tai-chinh-dien-mat-troi-dau-tu-20-phan-tram'
+            ),
+        );
+    }
+
+    return apply_filters('wataco_home_data', $data);
+}
+
+/**
+ * Get stats data for the home page.
+ *
+ * @deprecated Use wataco_get_home_data()['stats'] instead.
+ * @return array<int, array<string, string|float|int>>
+ */
+function wataco_get_home_stats() {
+    $data = wataco_get_home_data();
+    return $data['stats'];
 }
 
 /**

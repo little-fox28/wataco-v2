@@ -41,19 +41,12 @@ function wataco_register_polylang_strings() {
         'Careers',
         'News',
         'Projects',
-        'Address',
         'Email',
         'Phone',
         'All rights reserved',
         'Privacy',
         'Terms',
         '© %1$s %2$s. All rights reserved',
-    );
-
-    $floating_strings = array(
-        'Facebook',
-        'Chat Zalo',
-        'Call Us',
     );
 
     $not_found_strings = array(
@@ -99,10 +92,6 @@ function wataco_register_polylang_strings() {
         $key = 'wataco_footer_' . sanitize_title($string);
         $value = ($string === 'Email' || $string === 'Phone') ? $key : $string;
         pll_register_string($key, $value, $polylang_languages);
-    }
-
-    foreach ($floating_strings as $string) {
-        pll_register_string('wataco_floating_' . sanitize_title($string), $string, $polylang_languages);
     }
 
     foreach ($not_found_strings as $string) {
@@ -216,13 +205,100 @@ function wataco_register_polylang_strings() {
         pll_register_string('wataco_news_' . sanitize_title($string), $string, $polylang_languages);
     }
 
+    // Stats Section Strings
+    $stats_strings = array(
+        'TOTAL CAPACITY',
+        'YEARS EXPERIENCE',
+        'COMPLETED PROJECTS',
+        'SYSTEM RELIABILITY',
+    );
+
+    foreach ($stats_strings as $string) {
+        pll_register_string('wataco_stats_' . sanitize_title($string), $string, $polylang_languages);
+    }
+
+    // Home Section Strings
+    $home_strings = array(
+        // Investment Solutions
+        'INVESTMENT SOLUTIONS',
+        'Flexible Cooperation Models',
+        'DIVERSE INVESTMENT SOLUTIONS',
+        'Choose this solution',
+        'Key benefits',
+        'Model',
+        'Operating model',
+        'View Details',
+        'View solution details',
+        '1. ESCO Model',
+        '2. Rooftop Leasing',
+        '3. Direct Investment',
+        '4. Financial Leasing',
+        'ESCO Model - 0 VND Investment',
+        'Direct Investment Model',
+        'Industrial Rooftop Leasing Solution',
+        'Financial Leasing Solution',
+        'Fund',
+        'Business',
+        'Bank',
+        'Client',
+        'Financial Partner',
+        'Investor',
+        'Partner',
+        'EPC/O&M',
+        'Investment',
+        'Electricity Payment',
+        'Direct Investment',
+        'Consulting, design, EPC, O&M',
+        'Monthly electricity payment',
+        'Financial disbursement',
+        'Installation, operation, maintenance',
+        'Receive monthly lease income',
+        'Full EPC package (consulting, design, construction, warranty)',
+        'Monthly lease payment (principal + interest)',
+        'Financial disbursement 80%',
+        'Receive monthly lease payment',
+        'A model where WATACO and investment funds provide 100% of the capital, and the business only pays for the electricity used at a lower price than the grid.',
+        'The business invests 100% of the capital, WATACO acts as the general EPC contractor. The business owns the system and all generated electricity.',
+        'Businesses with qualified idle rooftops can lease them to increase income. The financial partner covers the full installation cost while WATACO executes as EPC contractor.',
+        'WATACO helps businesses connect with banks offering favorable packages. The business pays only 20% upfront, while the bank finances the remaining 80%. WATACO serves as EPC contractor.',
+        '*WATACO partners with trusted banks to provide preferential interest-rate services.',
+        '*Clients lease idle rooftop space with low risk and can renew leasing or inherit the system after 20 years.',
+        'ESCO (Energy Service Company) Solution',
+        'The ESCO model uses idle factory rooftops to deploy solar systems. WATACO acts as EPC contractor (engineering, procurement, construction, maintenance, and warranty) to ensure optimal system performance.',
+        'Direct Investment Solution',
+        'Invest once and benefit for over 30 years. By investing in solar, owners can save up to 90% on electricity and may sell surplus electricity to EVN. WATACO provides full EPC to maximize performance.',
+        'WATACO helps businesses connect with banks offering favorable packages. The business pays only 20% upfront, while the bank finances the remaining 80%. WATACO serves as EPC contractor.',       
+        // PPA Model
+        'SOLAR POWER 0 VND',
+        'PPA Cooperation Model',
+        'Roof-top solar power system with 0 VND investment capital for businesses.',
+        
+        // EPC Management
+        'EPC TOTAL CONTRACTOR',
+        'Professional EPC Management',
+        'We provide comprehensive EPC (Engineering, Procurement, and Construction) services, ensuring the highest standards of quality and efficiency.',
+        'Quality Commitment',
+        'Japanese Standard',
+        'View EPC Profile',
+        
+        // Map & Clients
+        'OPERATIONAL SCALE',
+        'Project Network',
+        'Commitment to quality and outstanding performance across Vietnam with more than 500MWp of total installed capacity.',
+        'Trusted Partners',
+    );
+
+    foreach ($home_strings as $string) {
+        $multiline = (strlen($string) > 50);
+        pll_register_string('wataco_home_' . sanitize_title(substr($string, 0, 30)), $string, 'wataco_home', $multiline);
+    }
+
     // Hero Section Strings
     $hero_strings = array(
         'LEADING ENTERPRISE',
         'IN RENEWABLE ENERGY',
         'Wataco partners with businesses in Vietnam and Japan to drive dual transformation toward Net-Zero.',
         'FLEXIBLE COOPERATION MODEL:',
-        'ZERO CAPEX SOLAR',
         'Zero upfront rooftop solar solutions designed for businesses.',
         'INVESTMENT & DEVELOPMENT',
         'OF RENEWABLE ENERGY PROJECTS',
@@ -236,6 +312,19 @@ function wataco_register_polylang_strings() {
     foreach ($hero_strings as $string) {
         $multiline = (strlen($string) > 50);
         pll_register_string($string, $string, 'wataco_hero', $multiline);
+    }
+
+    $heritage_strings = array(
+        'WATANABE CREATE HERITAGE',
+        'The Journey From Sendai to Vietnam',
+        'WATACO was established on the foundation of WATANABE CREATE Group, Sendai, Japan. Founded on December 17, 2015, WATANABE CREATE has achieved numerous successes in consulting, design and construction of solar-power facilities in Japan, the forerunner nation in renewable-energy technology.',
+        'WATACO was founded in 2021 in Vietnam, operating in the fields of consulting, design and construction of solar-power projects with the motto "quality creates sustainable prestige". We are committed to delivering the most optimal solutions, tailored to every customer’s requirement down to the smallest detail.',
+        'In addition, WATACO is expanding into residential construction, renovation and interior finishing, bringing comfortable, modern living spaces to Vietnam. We always listen to our customers’ wishes, craft works worthy of them, and continually learn to be the first choice.',
+    );
+
+    foreach ($heritage_strings as $string) {
+        $multiline = (strlen($string) > 50);
+        pll_register_string('wataco_heritage_' . sanitize_title(substr($string, 0, 30)), $string, 'wataco_heritage', $multiline);
     }
 }
 add_action('init', 'wataco_register_polylang_strings', 5);
