@@ -268,10 +268,25 @@ function wataco_register_polylang_strings() {
         'Direct Investment Solution',
         'Invest once and benefit for over 30 years. By investing in solar, owners can save up to 90% on electricity and may sell surplus electricity to EVN. WATACO provides full EPC to maximize performance.',
         'WATACO helps businesses connect with banks offering favorable packages. The business pays only 20% upfront, while the bank finances the remaining 80%. WATACO serves as EPC contractor.',       
+        
         // PPA Model
-        'SOLAR POWER 0 VND',
+        'SOLAR POWER 0 Cost',
         'PPA Cooperation Model',
-        'Roof-top solar power system with 0 VND investment capital for businesses.',
+        'Roof-top solar power system with 0 Cost investment capital for businesses.',
+        'No investment capital needed',
+        'Reduce operating costs',
+        'Green certificates & Carbon credits',
+        'Comprehensive O&M support',
+        
+        // PPA Diagram
+        'INVESTMENT FUND',
+        'CLIENT',
+        'EPC CONTRACTOR',
+        'Monthly Solar Power Usage Payment',
+        'Funding for Solar System Implementation & Maintenance',
+        'Design, Procurement, & Construction Installation',
+        'Completion of Necessary Procedures',
+        'Operation and Maintenance (O&M)',
         
         // EPC Management
         'EPC TOTAL CONTRACTOR',

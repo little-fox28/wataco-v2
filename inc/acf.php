@@ -480,9 +480,9 @@ function wataco_get_home_data() {
             'data'     => array(),
         ),
         'ppa' => array(
-            'subtitle' => $translate('SOLAR POWER 0 VND'),
+            'subtitle' => $translate('SOLAR POWER 0 Cost'),
             'title'    => $translate('PPA Cooperation Model'),
-            'desc'     => $translate('Roof-top solar power system with 0 VND investment capital for businesses.'),
+            'desc'     => $translate('Roof-top solar power system with 0 Cost investment capital for businesses.'),
             'benefits' => array(
                 $translate('No investment capital needed'),
                 $translate('Reduce operating costs'),

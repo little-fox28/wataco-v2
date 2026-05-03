@@ -11,48 +11,19 @@ if (!defined('ABSPATH')) {
 
 $data = wataco_get_home_data()['ppa'];
 
-// Diagram Translations
-$ppa_diagram_translations = array(
-    'vn' => array(
-        'investor' => 'QUỸ ĐẦU TƯ',
-        'client'   => 'KHÁCH HÀNG',
-        'epc'      => 'TỔNG THẦU EPC',
-        'payment'  => "Thanh toán tiền ĐMT\nsử dụng hàng tháng",
-        'funding'  => "Cấp vốn thực hiện và\nduy trì hệ thống ĐMT",
-        'process'  => array(
-            "Thiết kế, Cung cấp vật tư, Thi công lắp đặt",
-            "Hoàn tất các thủ tục cần thiết",
-            "Vận hành và Bảo dưỡng"
-        )
-    ),
-    'en' => array(
-        'investor' => "INVESTMENT\nFUND",
-        'client'   => "CLIENT",
-        'epc'      => "EPC CONTRACTOR",
-        'payment'  => "Monthly Solar Power\nUsage Payment",
-        'funding'  => "Funding for Solar System\nImplementation & Maintenance",
-        'process'  => array(
-            "Design, Procurement, & Construction Installation",
-            "Completion of Necessary Procedures",
-            "Operation and Maintenance (O&M)"
-        )
-    ),
-    'ja' => array(
-        'investor' => "投資ファンド",
-        'client'   => "顧客",
-        'epc'      => "EPC元請け業者",
-        'payment'  => "月々の太陽光発電\n使用料支払い",
-        'funding'  => "太陽光発電システムの\n構築・維持資金調達",
-        'process'  => array(
-            "設計、調達、建設・設置",
-            "必要な手続きの完了",
-            "運転・保守 (O&M)"
-        )
+// Diagram Translations from Polylang
+$dt = array(
+    'investor' => pll__('INVESTMENT FUND'),
+    'client'   => pll__('CLIENT'),
+    'epc'      => pll__('EPC CONTRACTOR'),
+    'payment'  => pll__('Monthly Solar Power Usage Payment'),
+    'funding'  => pll__('Funding for Solar System Implementation & Maintenance'),
+    'process'  => array(
+        pll__('Design, Procurement, & Construction Installation'),
+        pll__('Completion of Necessary Procedures'),
+        pll__('Operation and Maintenance (O&M)')
     )
 );
-
-$current_lang = function_exists('pll_current_language') ? pll_current_language('slug') : 'en';
-$dt = $ppa_diagram_translations[$current_lang] ?? $ppa_diagram_translations['en'];
 ?>
 
 <section id="section-ppa" class="min-h-screen flex flex-col items-center justify-center bg-[#0B1120] text-white relative overflow-hidden py-12 sm:py-16 md:py-20" x-data="{ shown: false }" x-intersect.once="shown = true">
@@ -98,7 +69,7 @@ $dt = $ppa_diagram_translations[$current_lang] ?? $ppa_diagram_translations['en'
                         </div>
 
                         <!-- Funding Arrow Text (Right) -->
-                        <div class="absolute top-[30%] left-[73%] w-[20%] rotate-62 text-center font-bold text-gray-800 text-[clamp(8px,1.4vw,11px)] leading-tight">
+                        <div class="absolute top-[30%] left-[75%] w-[20%] rotate-62 text-center font-bold text-gray-800 text-[clamp(8px,1.4vw,11px)] leading-tight">
                             <?php echo nl2br(esc_html($dt['funding'])); ?>
                         </div>
 
