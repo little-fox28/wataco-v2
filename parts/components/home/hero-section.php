@@ -45,7 +45,7 @@ $slider_cta = pll__('Get Consultation');
 <section id="section-0" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1A2B3C]">
     <div class="absolute inset-0 z-0">
         <video
-            src="https://pub-2052ca7db06a47f8bb49ac6ece5ff2fc.r2.dev/video_banner.mp4"
+            src="https://cdn.wataco.com.vn/video_banner.mp4"
             class="w-full h-full object-cover opacity-100"
             autoplay
             muted

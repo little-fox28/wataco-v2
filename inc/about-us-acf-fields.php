@@ -2,8 +2,7 @@
 /**
  * ACF Free Field Group: About Us Page
  * 
- * Comprehensive field group for About Us page with Mission and Culture sections.
- * All fields use WordPress Native get_post_meta() for retrieval.
+ * Register ACF Free compatible fields with Tabs organization.
  * All field labels and instructions are i18n ready.
  * 
  * @package Wataco
@@ -13,7 +12,6 @@ if (!function_exists('acf_add_local_field_group')) {
     return;
 }
 
-// Register the consolidated About Us field group with both Mission and Culture tabs
 acf_add_local_field_group([
     'key'      => 'group_about_us_page',
     'title'    => __('About Us Page', 'wataco'),
@@ -433,9 +431,14 @@ acf_add_local_field_group([
     'location'  => [
         [
             [
+                'param'    => 'post_type',
+                'operator' => '==',
+                'value'    => 'page',
+            ],
+            [
                 'param'    => 'page_template',
                 'operator' => '==',
-                'value'    => 'page-templates/template-about-us.php',
+                'value'    => 'template-about-us.php',
             ],
         ],
     ],
@@ -448,4 +451,3 @@ acf_add_local_field_group([
     'active'         => true,
     'description'    => __('ACF Free fields for About Us page with Mission and Culture sections', 'wataco'),
 ]);
-

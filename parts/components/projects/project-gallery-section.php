@@ -50,22 +50,44 @@ if ($projects_query->have_posts()) {
             }
         }
 
-        // Resolve image: ACF Image field -> ACF Path -> Featured Image
-        $img_array = get_field('project_img', $post_id);
-        $img_path  = get_post_meta($post_id, 'project_img_path', true);
-        $img_url   = '';
-
-        if (!empty($img_array) && isset($img_array['url'])) {
-            $img_url = $img_array['url'];
-        } elseif (!empty($img_path)) {
-            // Fallback to legacy path-based logic
-            if (strpos($img_path, 'http') !== 0) {
-                $img_url = esc_url(get_template_directory_uri() . '/assets/images/' . ltrim($img_path, '/'));
-            } else {
-                $img_url = esc_url($img_path);
+        // Resolve image: ACF Image field -> Featured Image -> Legacy path
+        $img_url = '';
+        $acf_img = get_field('project_img', $post_id);
+        
+        // 1. Try ACF image field first (Media Cloud Sync compatible)
+        if (!empty($acf_img)) {
+            if (is_numeric($acf_img)) {
+                // ACF returns ID format
+                $img_url = wp_get_attachment_url((int) $acf_img);
+            } elseif (is_array($acf_img)) {
+                // Fallback for array format (url or id)
+                $img_url = $acf_img['url'] ?? '';
+                if (empty($img_url) && isset($acf_img['id'])) {
+                    $img_url = wp_get_attachment_url($acf_img['id']);
+                }
             }
-        } elseif (has_post_thumbnail($post_id)) {
+        }
+        
+        // 2. Try featured image
+        if (empty($img_url) && has_post_thumbnail($post_id)) {
             $img_url = get_the_post_thumbnail_url($post_id, 'large');
+        }
+        
+        // 3. Try legacy meta path (convert to Cloudflare R2)
+        if (empty($img_url)) {
+            $img_path = get_post_meta($post_id, 'project_img_path', true);
+            if (!empty($img_path)) {
+                if (strpos($img_path, 'http') === 0) {
+                    // Already a full URL
+                    $img_url = esc_url($img_path);
+                } else if (strpos($img_path, 'cdn.wataco.com.vn') !== false || strpos($img_path, WATACO_CLOUDFLARE_CDN_URL) !== false) {
+                    // Already a Cloudflare URL
+                    $img_url = esc_url($img_path);
+                } else {
+                    // Legacy local path → Convert to Cloudflare R2
+                    $img_url = esc_url(wataco_convert_to_cloudflare_url($img_path));
+                }
+            }
         }
 
         $projects[] = array(

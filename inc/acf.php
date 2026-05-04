@@ -10,6 +10,130 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Cloudflare R2 configuration.
+ * These should match your Media Cloud Sync settings.
+ */
+define('WATACO_CLOUDFLARE_CDN_URL', 'https://cdn.wataco.com.vn');
+
+/**
+ * Convert local image path to Cloudflare R2 URL.
+ * 
+ * Handles legacy project_img_path migration:
+ * - Local: /assets/images/project/Higashimatsushima.jpg
+ * - Cloudflare: https://cdn.wataco.com.vn/wp-content/uploads/2026/05/Higashimatsushima.jpg
+ * 
+ * @param string $local_path The local image path
+ * @return string Cloudflare R2 URL or empty string
+ */
+function wataco_convert_to_cloudflare_url($local_path) {
+    if (empty($local_path)) {
+        return '';
+    }
+    
+    // Extract just the filename if it's a path
+    $filename = basename($local_path);
+    
+    // Build Cloudflare URL: https://cdn.wataco.com.vn/wp-content/uploads/2026/05/filename.jpg
+    return WATACO_CLOUDFLARE_CDN_URL . '/wp-content/uploads/2026/05/' . $filename;
+}
+
+/**
+ * Get image URL with Media Cloud Sync support.
+ * 
+ * This function properly handles:
+ * - ACF image fields (returns ID, converts to URL)
+ * - Media Cloud Sync URLs (media-wataco/wp-content/uploads/...)
+ * - WordPress attachment URLs
+ * - Legacy meta paths → Cloudflare R2
+ * 
+ * @param int $attachment_id The attachment/image ID
+ * @return string Image URL or empty string
+ */
+function wataco_get_image_url($attachment_id) {
+    if (!$attachment_id || !is_numeric($attachment_id)) {
+        return '';
+    }
+    
+    $attachment_id = (int) $attachment_id;
+    
+    // Get attachment URL - Media Cloud Sync intercepts this automatically
+    $url = wp_get_attachment_url($attachment_id);
+    
+    if ($url) {
+        return $url;
+    }
+    
+    // Fallback: Try with 'large' size
+    $large_url = wp_get_attachment_image_url($attachment_id, 'large');
+    if ($large_url) {
+        return $large_url;
+    }
+    
+    // If still no URL, try to get the source URL
+    $attachment = get_post($attachment_id);
+    if ($attachment) {
+        return wp_get_attachment_url($attachment->ID);
+    }
+    
+    return '';
+}
+
+/**
+ * Get post image URL with Media Cloud Sync support.
+ * 
+ * Prioritizes:
+ * 1. Featured image
+ * 2. ACF project_img field
+ * 3. Empty string
+ * 
+ * @param int $post_id The post ID
+ * @param string $size Image size (default: 'large')
+ * @return string Image URL or empty string
+ */
+function wataco_get_news_image($post_id, $size = 'large') {
+    if (!$post_id || !is_numeric($post_id)) {
+        return '';
+    }
+    
+    $post_id = (int) $post_id;
+    
+    // 1. Try featured image first
+    if (has_post_thumbnail($post_id)) {
+        return get_the_post_thumbnail_url($post_id, $size);
+    }
+    
+    // 2. Try ACF project image (Media Cloud Sync compatible)
+    if (function_exists('get_field')) {
+        $acf_img = get_field('project_img', $post_id);
+        if (!empty($acf_img)) {
+            if (is_numeric($acf_img)) {
+                return wp_get_attachment_image_url((int) $acf_img, $size);
+            } elseif (is_array($acf_img)) {
+                $url = $acf_img['url'] ?? '';
+                if (empty($url) && isset($acf_img['id'])) {
+                    return wp_get_attachment_image_url($acf_img['id'], $size);
+                }
+                return $url;
+            }
+        }
+    }
+
+    // 3. Try legacy XML hero image used by imported posts.
+    $xml_hero = get_post_meta($post_id, '_xml_hero_image', true);
+    if (is_string($xml_hero) && $xml_hero !== '') {
+        return esc_url_raw($xml_hero);
+    }
+
+    // 4. Try legacy path field and convert to Cloudflare URL.
+    $legacy_path = get_post_meta($post_id, 'project_img_path', true);
+    if (is_string($legacy_path) && $legacy_path !== '') {
+        return wataco_convert_to_cloudflare_url($legacy_path);
+    }
+    
+    return '';
+}
+
+/**
  * Register ACF Free field group attached to Theme Settings page.
  *
  * @return void
@@ -127,7 +251,7 @@ function wataco_register_home_solutions_acf_fields() {
                 'label' => 'Title',
                 'name' => 'solutions_title',
                 'type' => 'text',
-                'default_value' => 'Flexible Cooperation Models',
+                'default_value' => 'DIVERSE INVESTMENT SOLUTIONS',
             ),
             array(
                 'key' => 'field_home_solutions_data',
@@ -428,12 +552,103 @@ function wataco_get_theme_settings_page_id() {
  *
  * @return array<string, mixed>
  */
-function wataco_get_home_data() {
+function    wataco_get_home_data() {
     $translate = static function ($text) {
         return function_exists('pll__') ? (string) pll__($text) : $text;
     };
 
     $post_id = get_the_ID();
+
+    // If Polylang is active, prefer the translation of the current page so
+    // ACF functions (get_field / get_sub_field) return values for the
+    // current language instead of the default language.
+    if (function_exists('pll_get_post')) {
+        $translated_post_id = pll_get_post($post_id);
+        if (!empty($translated_post_id)) {
+            $post_id = (int) $translated_post_id;
+        }
+    }
+
+    // --- Fetch Dynamic Projects (Category 44) ---
+    $projects_data = array(
+        'vietnam' => array(),
+        'international' => array()
+    );
+
+    $base_cat_id = 44;
+    $translated_cat_id = $base_cat_id;
+    if (function_exists('pll_get_term')) {
+        $translated_cat_id = pll_get_term($base_cat_id, pll_current_language()) ?: $base_cat_id;
+    }
+
+    $projects_query = new WP_Query(array(
+        'post_type'      => 'post',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'cat'            => $translated_cat_id,
+        'no_found_rows'  => true,
+    ));
+
+    if ($projects_query->have_posts()) {
+        while ($projects_query->have_posts()) {
+            $projects_query->the_post();
+            $pid = get_the_ID();
+
+            // Determine category group
+            $terms = wp_get_post_terms($pid, 'category');
+            $group = 'vietnam';
+            foreach ($terms as $t) {
+                if (strpos($t->slug, 'international') !== false) {
+                    $group = 'international';
+                    break;
+                }
+            }
+
+            // Image logic - Priority: ACF image field > featured image > legacy meta path
+            // Media Cloud Sync integration: automatically handles URL conversion
+            $img_url = '';
+            
+            // 1. Try ACF image field (returns ID)
+            $img_id = function_exists('get_field') ? get_field('project_img', $pid) : false;
+            if ($img_id) {
+                $img_url = wataco_get_image_url($img_id);
+            }
+            
+            // 2. Try featured image
+            if (!$img_url && has_post_thumbnail($pid)) {
+                $featured_id = get_post_thumbnail_id($pid);
+                $img_url = wataco_get_image_url($featured_id);
+            }
+            
+            // 3. Try legacy meta path (convert to Cloudflare R2)
+            if (!$img_url) {
+                $img_path = get_post_meta($pid, 'project_img_path', true);
+                if ($img_path) {
+                    if (strpos($img_path, 'http') === 0) {
+                        // Already a full URL
+                        $img_url = $img_path;
+                    } elseif (strpos($img_path, 'cdn.wataco.com.vn') !== false || strpos($img_path, WATACO_CLOUDFLARE_CDN_URL) !== false) {
+                        // Already a Cloudflare URL
+                        $img_url = $img_path;
+                    } else {
+                        // Legacy local path → Convert to Cloudflare R2
+                        $img_url = wataco_convert_to_cloudflare_url($img_path);
+                    }
+                }
+            }
+
+            $projects_data[$group][] = array(
+                'name'     => get_the_title(),
+                'location' => (string) get_post_meta($pid, 'project_location', true),
+                'capacity' => (string) get_post_meta($pid, 'project_capacity', true),
+                'year'     => (string) get_post_meta($pid, 'project_year', true),
+                'status'   => $translate((string) get_post_meta($pid, 'project_status', true)),
+                'img'      => $img_url,
+                'slug'     => get_post_field('post_name', $pid),
+            );
+        }
+        wp_reset_postdata();
+    }
 
     $data = array(
         'stats' => array(
@@ -471,7 +686,7 @@ function wataco_get_home_data() {
         ),
         'solutions' => array(
             'subtitle' => function_exists('get_field') && get_field('solutions_subtitle', $post_id) ? $translate(get_field('solutions_subtitle', $post_id)) : $translate('INVESTMENT SOLUTIONS'),
-            'title'    => function_exists('get_field') && get_field('solutions_title', $post_id) ? $translate(get_field('solutions_title', $post_id)) : $translate('Flexible Cooperation Models'),
+            'title'    => function_exists('get_field') && get_field('solutions_title', $post_id) ? $translate(get_field('solutions_title', $post_id)) : $translate('DIVERSE INVESTMENT SOLUTIONS'),
             'labels'   => array(
                 'chooseSolution' => $translate('Choose this solution'),
                 'modelTitle'     => $translate('Model'),
@@ -495,15 +710,13 @@ function wataco_get_home_data() {
             'subtitle' => $translate('EPC TOTAL CONTRACTOR'),
             'title'    => $translate('Professional EPC Management'),
             'desc'     => $translate('We provide comprehensive EPC (Engineering, Procurement, and Construction) services, ensuring the highest standards of quality and efficiency.'),
-            'image'    => 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200',
             'quality'  => $translate('Quality Commitment'),
             'standard' => $translate('Japanese Standard'),
             'button'   => $translate('View EPC Profile'),
             'steps'    => array(
-                array('title' => $translate('Consulting & Survey'), 'desc' => $translate('Technical assessment and site feasibility study.')),
-                array('title' => $translate('Design & Engineering'), 'desc' => $translate('Optimized system design using international standards.')),
-                array('title' => $translate('Procurement'), 'desc' => $translate('Selection of Tier-1 equipment and materials.')),
-                array('title' => $translate('Construction'), 'desc' => $translate('Professional installation and safety management.')),
+                array('title' => $translate('Design & Engineering'), 'desc' => $translate('Technical assessment and site feasibility study.')),
+                array('title' => $translate('Procurement'), 'desc' => $translate('Optimized system design using international standards.')),
+                array('title' => $translate('Construction'), 'desc' => $translate('Selection of Tier-1 equipment and materials.')),
                 array('title' => $translate('O&M'), 'desc' => $translate('System monitoring and maintenance services.')),
             ),
         ),
@@ -514,21 +727,21 @@ function wataco_get_home_data() {
             'clientTitle' => $translate('Trusted Partners'),
             'stats'       => array(
                 array(
-                    'label' => $translate('Projects Signed'),
+                    'label' => $translate('PROJECTS SIGNED'),
                     'val'   => 250,
                     'suffix'=> '+',
                     'color' => '#3B82F6',
                     'icon'  => 'file-text'
                 ),
                 array(
-                    'label' => $translate('Total Installed Capacity'),
+                    'label' => $translate('TOTAL INSTALLED CAPACITY'),
                     'val'   => 500,
                     'suffix'=> ' MWp',
                     'color' => '#EAB308',
                     'icon'  => 'zap'
                 ),
                 array(
-                    'label' => $translate('Systems Operating'),
+                    'label' => $translate('SYSTEMS OPERATING'),
                     'val'   => 180,
                     'suffix'=> '+',
                     'color' => '#228B22',
@@ -541,11 +754,11 @@ function wataco_get_home_data() {
                 array('top' => '20%', 'left' => '40%', 'name' => $translate('Hải Phòng')),
                 array('top' => '48%', 'left' => '50%', 'name' => $translate('Quảng Ngãi')),
                 array('top' => '75%', 'left' => '52%', 'name' => $translate('Lâm Đồng')),
-                array('top' => '80%', 'left' => '58%', 'name' => $translate('Bình Thuận')),
+                array('top' => '80%', 'left' => '55%', 'name' => $translate('Bình Thuận')),
                 array('top' => '85%', 'left' => '40%', 'name' => $translate('Tây Ninh')),
                 array('top' => '87%', 'left' => '45%', 'name' => $translate('Bình Dương')),
-                array('top' => '88%', 'left' => '40%', 'name' => $translate('Đồng Nai')),
-                array('top' => '92%', 'left' => '38%', 'name' => $translate('Long An')),
+                array('top' => '88%', 'left' => '45%', 'name' => $translate('Đồng Nai')),
+                array('top' => '82%', 'left' => '45%', 'name' => $translate('Long An')),
             ),
             'clients' => array(
                 array('name' => 'TH True Milk', 'logo' => 'TH.svg', 'color' => '#013C78'),
@@ -560,55 +773,14 @@ function wataco_get_home_data() {
             )
         ),
         'projects' => array(
-            'subtitle' => $translate('PROJECTS'),
-            'title'    => $translate('Featured Projects'),
-            'viewMore' => $translate('VIEW PROJECT'),
+            'subtitle' => $translate('ACTUAL WORKS'),
+            'title'    => $translate('Projects'),
+            'viewMore' => $translate('Project Details'),
             'tabs'     => array(
                 array('id' => 'vietnam', 'label' => $translate('Vietnam')),
                 array('id' => 'international', 'label' => $translate('International')),
             ),
-            'data'     => array(
-                'vietnam' => array(
-                    array(
-                        'name'     => $translate('TH True Milk Rooftop Solar'),
-                        'location' => $translate('Nghệ An, Vietnam'),
-                        'capacity' => '5.0 MWp',
-                        'year'     => '2023',
-                        'status'   => $translate('Completed'),
-                        'img'      => 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&q=80&w=1200',
-                        'slug'     => 'th-true-milk-solar'
-                    ),
-                    array(
-                        'name'     => $translate('FGC Tea Factory'),
-                        'location' => $translate('Phú Thọ, Vietnam'),
-                        'capacity' => '2.5 MWp',
-                        'year'     => '2022',
-                        'status'   => $translate('Completed'),
-                        'img'      => 'https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&q=80&w=1200',
-                        'slug'     => 'fgc-tea-solar'
-                    ),
-                    array(
-                        'name'     => $translate('MKVN Manufacturing'),
-                        'location' => $translate('Bình Dương, Vietnam'),
-                        'capacity' => '1.8 MWp',
-                        'year'     => '2024',
-                        'status'   => $translate('In Progress'),
-                        'img'      => 'https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?auto=format&fit=crop&q=80&w=1200',
-                        'slug'     => 'mkvn-solar'
-                    ),
-                ),
-                'international' => array(
-                    array(
-                        'name'     => $translate('Sendai Industrial Park'),
-                        'location' => $translate('Miyagi, Japan'),
-                        'capacity' => '10.0 MWp',
-                        'year'     => '2021',
-                        'status'   => $translate('Completed'),
-                        'img'      => 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?auto=format&fit=crop&q=80&w=1200',
-                        'slug'     => 'sendai-industrial-solar'
-                    ),
-                )
-            )
+            'data'     => $projects_data,
         ),
         'mission' => array(
             'subtitle' => $translate('Strategic Orientation'),
@@ -699,7 +871,7 @@ function wataco_get_home_data() {
                 'diagramType' => 'three-party',
                 'roles'       => array('client' => $translate('Client'), 'partner' => $translate('Financial Partner')),
                 'flows'       => array('watacoToClient' => $translate('Installation, operation, maintenance'), 'partnerToWataco' => $translate('Financial disbursement'), 'clientToPartner' => $translate('Receive monthly lease income')),
-                'note'        => $translate('Clients lease idle rooftop space with low risk and can renew leasing or inherit the system after 20 years.'),
+                'note'        => $translate('*Clients lease idle rooftop space with low risk and can renew leasing or inherit the system after 20 years.'),
                 'linkSlug'    => 'cho-thue-mai-xuong-lap-dien-mat-troi'
             ),
             array(
@@ -720,7 +892,7 @@ function wataco_get_home_data() {
                 'diagramType' => 'three-party',
                 'roles'       => array('client' => $translate('Client'), 'partner' => $translate('Bank')),
                 'flows'       => array('watacoToClient' => $translate('Consulting, design, EPC, O&M'), 'partnerToWataco' => $translate('Financial disbursement 80%'), 'clientToPartner' => $translate('Monthly lease payment (principal + interest)')),
-                'note'        => $translate('WATACO partners with trusted banks to provide preferential interest-rate services.'),
+                'note'        => $translate('*WATACO partners with trusted banks to provide preferential interest-rate services.'),
                 'linkSlug'    => 'cho-thue-tai-chinh-dien-mat-troi-dau-tu-20-phan-tram'
             ),
         );

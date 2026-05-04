@@ -91,10 +91,10 @@ $data = wataco_get_home_data()['map'];
                     $all_clients = array_merge($data['clients'], $data['clients'], $data['clients'], $data['clients']);
                     foreach ($all_clients as $client) : 
                     ?>
-                        <div class="shrink-0 flex items-center justify-center min-w-[100px] lg:min-w-[150px]">
+                        <div class="shrink-0 flex items-center justify-center min-w-25 lg:min-w-37.5">
                             <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/images/client-logo/' . $client['logo']); ?>" 
                                  alt="<?php echo esc_attr($client['name']); ?>" 
-                                 class="h-10 lg:h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-500 opacity-60 hover:opacity-100" />
+                                 class="h-10 lg:h-16 w-auto object-contain" />
                         </div>
                     <?php endforeach; ?>
                 </div>

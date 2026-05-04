@@ -127,7 +127,7 @@ $data = wataco_get_home_data()['solutions'];
                                 <?php endif; ?>
 
                                 <?php if (isset($sol['note'])) : ?>
-                                    <div class="mt-8 text-[10px] text-gray-400 italic text-center max-w-[80%]">*<?php echo esc_html($sol['note']); ?></div>
+                                    <div class="mt-8 text-[10px] text-gray-400 italic text-center max-w-[80%]"><?php echo esc_html($sol['note']); ?></div>
                                 <?php endif; ?>
                             </div>
 

@@ -44,8 +44,31 @@ $updating_text = function_exists('pll__') ? pll__('Updating...') : 'Updating...'
             ?>
                 <a href="<?php echo esc_url(get_permalink()); ?>" class="group flex gap-4 items-center no-underline">
                     <div class="w-16 h-16 rounded-md overflow-hidden shrink-0 border border-gray-100">
-                        <?php if (has_post_thumbnail()) : ?>
-                            <img src="<?php echo esc_url(get_the_post_thumbnail_url($rel_post_id, 'thumbnail')); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" />
+                        <?php 
+                            $rel_thumbnail_url = '';
+                            
+                            // 1. Try featured image first
+                            if (has_post_thumbnail($rel_post_id)) {
+                                $rel_thumbnail_url = get_the_post_thumbnail_url($rel_post_id, 'thumbnail');
+                            }
+                            
+                            // 2. Try ACF project image (Media Cloud Sync compatible)
+                            if (empty($rel_thumbnail_url) && function_exists('get_field')) {
+                                $acf_img = get_field('project_img', $rel_post_id);
+                                if (!empty($acf_img)) {
+                                    if (is_numeric($acf_img)) {
+                                        $rel_thumbnail_url = wp_get_attachment_image_url((int) $acf_img, 'thumbnail');
+                                    } elseif (is_array($acf_img)) {
+                                        $rel_thumbnail_url = $acf_img['url'] ?? '';
+                                        if (empty($rel_thumbnail_url) && isset($acf_img['id'])) {
+                                            $rel_thumbnail_url = wp_get_attachment_image_url($acf_img['id'], 'thumbnail');
+                                        }
+                                    }
+                                }
+                            }
+                        ?>
+                        <?php if (!empty($rel_thumbnail_url)) : ?>
+                            <img src="<?php echo esc_url($rel_thumbnail_url); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" loading="lazy" />
                         <?php else : ?>
                             <div class="w-full h-full bg-gray-100"></div>
                         <?php endif; ?>

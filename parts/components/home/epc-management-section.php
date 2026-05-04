@@ -10,6 +10,24 @@ if (!defined('ABSPATH')) {
 }
 
 $data = wataco_get_home_data()['epc'];
+$step_icons = array(
+    array(
+        'label' => 'PenTools',
+        'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m14.5 4.5 5 5M4 20l4.5-1.5L20 7a2.1 2.1 0 0 0-3-3L5.5 15.5 4 20"/><path d="m13.5 5.5 5 5"/></svg>',
+    ),
+    array(
+        'label' => 'Package',
+        'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 7 9 5 9-5"/><path d="M3 7v10l9 5 9-5V7"/><path d="M12 12v10"/><path d="M7.5 9.5 16.5 4.5"/></svg>',
+    ),
+    array(
+        'label' => 'Wrench',
+        'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>',
+    ),
+    array(
+        'label' => 'Barchart',
+        'svg'   => '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 16V9"/><path d="M12 16V5"/><path d="M17 16v-4"/></svg>',
+    ),
+);
 ?>
 
 <section id="section-epc" class="min-h-screen flex flex-col items-center justify-center bg-white relative overflow-hidden py-12 sm:py-16 md:py-20" 
@@ -26,7 +44,7 @@ $data = wataco_get_home_data()['epc'];
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
              @click="zoomedImage = null"
-             class="fixed inset-0 z-[100] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
+             class="fixed inset-0 z-10 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-zoom-out"
              style="display: none;">
             <button class="absolute top-6 right-6 text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -59,8 +77,8 @@ $data = wataco_get_home_data()['epc'];
                 </div>
 
                 <div class="relative rounded-2xl overflow-hidden shadow-2xl group w-full h-70 lg:h-87.5 cursor-zoom-in mb-10"
-                     @click="zoomedImage = '<?php echo esc_url($data['image']); ?>'">
-                    <img src="<?php echo esc_url($data['image']); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                     @click="zoomedImage = '<?php echo esc_url( get_theme_file_uri( '/assets/images/epc.png' )); ?>'">
+                    <img src="<?php echo esc_url( get_theme_file_uri( '/assets/images/epc.png' ) ); ?>" alt="EPC" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                     <div class="absolute inset-0 bg-linear-to-t from-[#1A2B3C] via-[#1A2B3C]/30 to-transparent opacity-90"></div>
                     
                     <div class="absolute top-4 right-4 bg-black/40 backdrop-blur-sm p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-white">
@@ -91,6 +109,7 @@ $data = wataco_get_home_data()['epc'];
 
                 <div class="space-y-8">
                     <?php foreach ($data['steps'] as $idx => $step) : ?>
+                        <?php $step_icon = $step_icons[$idx]['svg'] ?? $step_icons[0]['svg']; ?>
                         <div class="relative pl-0 sm:pl-20">
                             <div class="hidden sm:flex absolute left-0 top-6 w-16 h-16 bg-white border-4 border-gray-50 rounded-full items-center justify-center shadow-sm z-10 text-[#1A2B3C] font-black font-tech text-xl">
                                 0<?php echo $idx + 1; ?>
@@ -98,7 +117,7 @@ $data = wataco_get_home_data()['epc'];
                             <div class="bg-[#F8FAFC] p-8 rounded-2xl border border-[#228B22] shadow-xl flex flex-col sm:flex-row gap-6 items-start relative overflow-hidden">
                                 <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#228B22]"></div>
                                 <div class="w-14 h-14 bg-[#228B22] rounded-full flex items-center justify-center shrink-0 shadow-md text-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
+                                    <?php echo $step_icon; ?>
                                 </div>
                                 <div>
                                     <h4 class="text-xl font-black text-[#228B22] font-heading mb-3">

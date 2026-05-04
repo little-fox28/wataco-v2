@@ -151,7 +151,7 @@ if ($news_query->have_posts()) {
             'date'          => get_the_date($date_format, $post_id),
             'trending_date' => get_the_date($trending_format, $post_id),
             'views'         => $views,
-            'image'         => has_post_thumbnail($post_id) ? get_the_post_thumbnail_url($post_id, 'large') : '',
+            'image'         => wataco_get_news_image($post_id),
             'permalink'     => get_permalink($post_id),
         );
     }
@@ -235,7 +235,7 @@ $tags_cloud_json = htmlspecialchars(wp_json_encode($tags_cloud), ENT_QUOTES, 'UT
         }
     }"
 >
-    <section class="relative h-[26rem] lg:h-[38rem] overflow-hidden bg-[#1A2B3C] text-white" x-show="heroSlides.length > 0" style="display: none;">
+    <section class="relative h-[26rem] lg:h-[38rem] overflow-hidden bg-[#040505] text-white" x-show="heroSlides.length > 0" style="display: none;">
         <template x-for="(slide, idx) in heroSlides" :key="slide.id">
             <div class="absolute inset-0 transition-opacity duration-700" :class="currentHero === idx ? 'opacity-100' : 'opacity-0 pointer-events-none'">
                 <template x-if="slide.image">

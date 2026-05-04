@@ -221,7 +221,6 @@ function wataco_register_polylang_strings() {
     $home_strings = array(
         // Investment Solutions
         'INVESTMENT SOLUTIONS',
-        'Flexible Cooperation Models',
         'DIVERSE INVESTMENT SOLUTIONS',
         'Choose this solution',
         'Key benefits',
@@ -294,13 +293,29 @@ function wataco_register_polylang_strings() {
         'We provide comprehensive EPC (Engineering, Procurement, and Construction) services, ensuring the highest standards of quality and efficiency.',
         'Quality Commitment',
         'Japanese Standard',
-        'View EPC Profile',
+        'View EPC Profile', 
+        'Consulting & Survey',
+        'Technical assessment and site feasibility study.',
+        'Design & Engineering',
+        'Optimized system design using international standards.',
+        'Procurement',
+        'Selection of Tier-1 equipment and materials.',
+        'Construction',
+        'Professional installation and safety management.',
+        'O&M',
+        'System monitoring and maintenance services.',
         
         // Map & Clients
         'OPERATIONAL SCALE',
         'Project Network',
         'Commitment to quality and outstanding performance across Vietnam with more than 500MWp of total installed capacity.',
         'Trusted Partners',
+        'PROJECTS SIGNED',
+        'TOTAL INSTALLED CAPACITY',
+        'SYSTEMS OPERATING',
+
+        // ACTUAL WORKS
+        'ACTUAL WORKS',
     );
 
     foreach ($home_strings as $string) {

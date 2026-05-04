@@ -1,6 +1,7 @@
 <?php
 /**
  * About page mission and vision section.
+ * Uses WordPress Native get_post_meta() for ACF Free data retrieval.
  *
  * @package Wataco
  */
@@ -9,13 +10,45 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$core_values = array(
-    pll__('Sustainability and Eco-friendliness'),
-    pll__('Quality and Innovation'),
-    pll__('Responsibility and Transparency'),
-    pll__('Collaboration and Development'),
-    pll__('Innovation and Creativity'),
-);
+// Get ACF values using WordPress Native function (get_post_meta)
+$mission_title_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_section_title', true) : '';
+$mission_title = (is_string($mission_title_raw) && '' !== trim($mission_title_raw))
+    ? trim($mission_title_raw)
+    : __('Strategic Direction', 'wataco');
+
+$vision_title_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_vision_title', true) : '';
+$vision_title = (is_string($vision_title_raw) && '' !== trim($vision_title_raw))
+    ? trim($vision_title_raw)
+    : __('Vision', 'wataco');
+
+$vision_desc_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_vision_desc', true) : '';
+$vision_desc = (is_string($vision_desc_raw) && '' !== trim($vision_desc_raw))
+    ? trim($vision_desc_raw)
+    : '';
+
+$mission_card_title_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_mission_title', true) : '';
+$mission_card_title = (is_string($mission_card_title_raw) && '' !== trim($mission_card_title_raw))
+    ? trim($mission_card_title_raw)
+    : __('Mission', 'wataco');
+
+$mission_desc_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_mission_desc', true) : '';
+$mission_desc = (is_string($mission_desc_raw) && '' !== trim($mission_desc_raw))
+    ? trim($mission_desc_raw)
+    : '';
+
+$core_values_title_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), 'mission_core_values_title', true) : '';
+$core_values_title = (is_string($core_values_title_raw) && '' !== trim($core_values_title_raw))
+    ? trim($core_values_title_raw)
+    : __('Core Values', 'wataco');
+
+// Collect core values from incremental fields
+$core_values = array();
+for ($i = 1; $i <= 6; $i++) {
+    $value_raw = function_exists('get_post_meta') ? get_post_meta(get_the_ID(), "mission_core_value_$i", true) : '';
+    if (is_string($value_raw) && '' !== trim($value_raw)) {
+        $core_values[] = trim($value_raw);
+    }
+}
 ?>
 
 <section class="py-24 lg:py-40 bg-white relative overflow-hidden border-t border-gray-100" data-parallax-root>
@@ -30,10 +63,10 @@ $core_values = array(
                  class="transition-all duration-700 ease-out"
                  :class="shown ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'">
                 <span class="text-[#228B22] font-black text-xs uppercase tracking-[0.3em] mb-4 block">
-                    <?php echo esc_html(pll__('DEVELOPMENT ORIENTATION')); ?>
+                    <?php echo esc_html(__('DEVELOPMENT ORIENTATION', 'wataco')); ?>
                 </span>
                 <h2 class="text-4xl lg:text-5xl font-black text-[#1A2B3C] font-heading leading-tight mb-6 tracking-tight">
-                    <?php echo esc_html(pll__('Vision & Mission')); ?>
+                    <?php echo esc_html($mission_title); ?>
                 </h2>
                 <div class="w-16 h-1.5 bg-gradient-to-r from-[#228B22] to-[#FFD700] rounded-full"></div>
             </div>
@@ -55,11 +88,13 @@ $core_values = array(
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html(pll__('Vision')); ?></h3>
+                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html($vision_title); ?></h3>
                         </div>
+                        <?php if (!empty($vision_desc)) : ?>
                         <p class="text-gray-600 leading-relaxed text-lg lg:text-xl font-light">
-                            <?php echo esc_html(pll__('Creating a sustainable future through constructing and investing in advanced solar energy in Vietnam, supporting business growth and partnering with the community.')); ?>
+                            <?php echo wp_kses_post($vision_desc); ?>
                         </p>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -80,11 +115,13 @@ $core_values = array(
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html(pll__('Mission')); ?></h3>
+                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html($mission_card_title); ?></h3>
                         </div>
+                        <?php if (!empty($mission_desc)) : ?>
                         <p class="text-gray-600 leading-relaxed text-lg lg:text-xl font-light">
-                            <?php echo esc_html(pll__('Providing high-quality, advanced, and environmentally friendly solar energy construction and investment solutions, contributing to enhancing life quality and supporting the sustainable development of businesses in Vietnam.')); ?>
+                            <?php echo wp_kses_post($mission_desc); ?>
                         </p>
+                        <?php endif; ?>
                     </div>
                 </div>
 
@@ -104,9 +141,10 @@ $core_values = array(
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.953a1 1 0 00.95.69h4.157c.969 0 1.371 1.24.588 1.81l-3.364 2.445a1 1 0 00-.364 1.118l1.286 3.953c.3.922-.755 1.688-1.539 1.118l-3.364-2.444a1 1 0 00-1.176 0l-3.364 2.444c-.784.57-1.838-.196-1.539-1.118l1.286-3.953a1 1 0 00-.364-1.118L2.98 9.38c-.783-.57-.38-1.81.588-1.81h4.157a1 1 0 00.95-.69l1.286-3.953z"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html(pll__('Core Values')); ?></h3>
+                            <h3 class="text-2xl lg:text-4xl font-black text-[#1A2B3C] font-heading"><?php echo esc_html($core_values_title); ?></h3>
                         </div>
 
+                        <?php if (!empty($core_values)) : ?>
                         <div class="grid sm:grid-cols-2 gap-x-8 gap-y-6">
                             <?php foreach ($core_values as $index => $core_value) : ?>
                                 <div class="flex items-start space-x-3 group transition-all duration-500 ease-out"
@@ -124,6 +162,7 @@ $core_values = array(
                                 </div>
                             <?php endforeach; ?>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

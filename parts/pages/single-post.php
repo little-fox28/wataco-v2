@@ -35,21 +35,50 @@ if ($is_project) {
 
 // ─── Hero image ───────────────────────────────────────────────────────
 $hero_url = '';
-if (has_post_thumbnail()) {
+
+// 1. Try featured image first
+if (has_post_thumbnail($post_id)) {
     $hero_url = get_the_post_thumbnail_url($post_id, 'full');
-} else {
-    if ($is_project) {
-        $acf_img = get_field('project_img', $post_id);
-        if (!empty($acf_img)) {
-            $hero_url = is_array($acf_img) ? $acf_img['url'] : wp_get_attachment_url($acf_img);
+}
+
+// 2. Try ACF project image (if featured image not set)
+// Check for ACF project image regardless of project detection
+if (empty($hero_url) && function_exists('get_field')) {
+    $acf_img = get_field('project_img', $post_id);
+    
+    if (!empty($acf_img)) {
+        // ACF configured to return 'id' format
+        if (is_numeric($acf_img)) {
+            $acf_img = (int) $acf_img;
+            
+            // Direct attachment URL - Media Cloud Sync will intercept this automatically
+            $hero_url = wp_get_attachment_url($acf_img);
+            
+            // If empty, try with wp_get_attachment_image_url as fallback
+            if (empty($hero_url)) {
+                $hero_url = wp_get_attachment_image_url($acf_img, 'full');
+            }
+        } elseif (is_array($acf_img)) {
+            // Handle array format (url or id)
+            $hero_url = $acf_img['url'] ?? '';
+            if (empty($hero_url) && isset($acf_img['id'])) {
+                $hero_url = wp_get_attachment_url($acf_img['id']);
+            }
         }
     }
-    if (empty($hero_url)) {
-        $xml_hero = get_post_meta($post_id, '_xml_hero_image', true);
-        if (!empty($xml_hero)) {
-            $hero_url = esc_url($xml_hero);
-        }
+}
+
+// 3. Try legacy XML hero image meta
+if (empty($hero_url)) {
+    $xml_hero = get_post_meta($post_id, '_xml_hero_image', true);
+    if (!empty($xml_hero)) {
+        $hero_url = esc_url($xml_hero);
     }
+}
+
+// Debug comment (visible in page source if WP_DEBUG is true)
+if (WP_DEBUG && defined('WP_DEBUG_DISPLAY') && !WP_DEBUG_DISPLAY) {
+    error_log('[HERO IMAGE DEBUG] Post ID: ' . $post_id . ', ACF Image: ' . (function_exists('get_field') ? var_export(get_field('project_img', $post_id), true) : 'N/A') . ', Final URL: ' . $hero_url);
 }
 
 // ─── Polylang Translations ────────────────────────────────────────────
