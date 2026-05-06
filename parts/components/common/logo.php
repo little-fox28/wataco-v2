@@ -24,24 +24,9 @@ $show_branding = $args['show_branding'] ?? true;
 <div class="shrink-0">
     <a href="<?php echo esc_url(home_url('/')); ?>" class="flex items-center space-x-3 hover:opacity-90 transition-opacity <?php echo esc_attr($class); ?>">
         <?php
-        if (has_custom_logo()) {
-            // Output custom logo with Tailwind styling
-            $logo_id = get_theme_mod('custom_logo');
-            if ($logo_id) {
-                $logo_html = wp_get_attachment_image(
-                    $logo_id,
-                    array(130, 100),
-                    false,
-                    array(
-                        'class' => 'h-10 w-15 lg:h-12 lg:w-16 object-contain'
-                    )
-                );
-                echo wp_kses_post($logo_html);
-            }
-        } else {
-            // Fallback: Display site name
-            echo '<span class="text-white font-black text-lg lg:text-xl whitespace-nowrap">' . esc_html(bloginfo('name')) . '</span>';
-        }
+        // Hardcoded SVG logo path
+        $svg_path = get_theme_file_uri('assets/images/wataco-logo-svg.svg');
+        echo '<img src="' . esc_url($svg_path) .  '" class="h-10 w-15 lg:h-12 lg:w-16 object-contain">';
         ?>
         
         <div class="flex flex-col">

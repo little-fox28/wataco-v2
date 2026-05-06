@@ -1,0 +1,89 @@
+name: Deploy WATACO Theme to Share Hosting
+
+# Chỉ kích hoạt Action khi có code mới được đẩy lên nhánh 'main'
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build Node.js & FTP Sync
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🚚 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Lấy lịch sử commit gần nhất để so sánh file thay đổi
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # Đảm bảo khớp với version đang dùng ở môi trường Local
+          cache: 'npm' # Cache npm packages to speed up installs
+
+      - name: 📋 Verify Node Version
+        run: |
+          node --version
+          npm --version
+
+      - name: 📦 Install NPM Packages
+        # Cài đặt các thư viện cần thiết cho Tailpress/Tailwind
+        run: npm ci || npm install
+
+      - name: 🛠️ Build Assets (Tailwind CSS/JS)
+        # Chạy lệnh build tĩnh để sinh ra file CSS/JS cuối cùng
+        run: npm run build
+
+      - name: 📊 Show Changed Files
+        run: git diff --name-only HEAD~1 || echo "First deployment or initial commit"
+
+      - name: 🚀 FTP Deploy to Tino Hosting
+        if: success() # Only deploy if all previous steps succeeded
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          # Gọi các khóa bí mật từ GitHub Secrets
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          
+          # ĐIỀU HƯỚNG ĐÍCH (Cực kỳ quan trọng)
+          # Thư mục trên server chứa code giao diện
+          server-dir: public_html/wp-content/themes/wataco-theme/
+          
+          # An toàn: Không xóa các file lạ trên server (như ảnh upload hoặc plugin)
+          dangerous-clean-slate: false
+          
+          # Loại trừ các file rác sinh ra trong quá trình build
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.github/**
+            **/src/**
+            **/tests/**
+            package.json
+            package-lock.json
+            webpack.mix.js
+            vite.config.mjs
+            tailwind.config.js
+            tsconfig.json
+            composer.json
+            composer.lock
+            README.md
+            CHANGELOG.md
+            LICENSE
+            .distignore
+            .gitignore
+            .eslintrc*
+
+      - name: ✅ Deployment Success
+        if: success()
+        run: echo "🎉 Deployment completed successfully!"
+
+      - name: ❌ Deployment Failed
+        if: failure()
+        run: |
+          echo "⚠️ Deployment failed. Please check the logs above."
+          exit 1

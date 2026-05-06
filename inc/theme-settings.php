@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Register top-level admin menu for WATACO settings.
+ * Register top-level admin menu for Contact Settings.
  *
  * @return void
  */
@@ -18,7 +18,7 @@ function wataco_register_settings_menu_page() {
     add_menu_page(
         __('WATACO Settings', 'wataco'),
         __('WATACO Settings', 'wataco'),
-        'manage_options',
+        'edit_others_posts',
         'wataco-settings',
         'wataco_render_settings_page',
         'dashicons-admin-generic',
@@ -51,7 +51,7 @@ function wataco_sanitize_zalo_value($value) {
 }
 
 /**
- * Register settings, section, and fields for WATACO settings page.
+ * Register settings, section, and fields for Contact Settings page.
  *
  * @return void
  */
@@ -208,17 +208,17 @@ function wataco_render_theme_settings_field($args) {
 }
 
 /**
- * Render WATACO settings page content.
+ * Render Contact Settings page content.
  *
  * @return void
  */
 function wataco_render_settings_page() {
-    if (!current_user_can('manage_options')) {
+    if (!current_user_can('edit_others_posts')) {
         wp_die(esc_html__('You do not have permission to access this page.', 'wataco'));
     }
     ?>
     <div class="wrap">
-        <h1><?php echo esc_html__('WATACO Settings', 'wataco'); ?></h1>
+        <h1><?php echo esc_html__('Contact Settings', 'wataco'); ?></h1>
         <form action="options.php" method="post">
             <?php
             settings_fields('wataco_theme_settings_group');
