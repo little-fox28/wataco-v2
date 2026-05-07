@@ -20,10 +20,6 @@ export default defineConfig(({ command }) => {
             cssMinify: true,
             target: 'es2019',
             reportCompressedSize: false,
-            rollupOptions: {
-                // No entry files needed - Tailwind CSS is applied via the plugin
-                input: {},
-            },
         },
         esbuild: {
             legalComments: 'none',
