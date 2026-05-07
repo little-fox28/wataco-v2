@@ -12,7 +12,7 @@ export default defineConfig(({ command }) => {
             origin: 'http://localhost:8000',
         },
         build: {
-            manifest: true,
+            manifest: false,
             outDir: 'dist',
             emptyOutDir: true,
             sourcemap: false,
@@ -21,15 +21,12 @@ export default defineConfig(({ command }) => {
             target: 'es2019',
             reportCompressedSize: false,
             rollupOptions: {
-                input: [
-                    'resources/js/app.js',
-                    'resources/css/app.css',
-                    'resources/css/editor-style.css'
-                ],
+                // WordPress theme doesn't need entry files - Tailwind CSS plugin handles everything
+                input: 'style.css',
                 output: {
-                    assetFileNames: 'assets/[name]-[hash][extname]',
-                    chunkFileNames: 'assets/[name]-[hash].js',
                     entryFileNames: 'assets/[name]-[hash].js',
+                    chunkFileNames: 'assets/[name]-[hash].js',
+                    assetFileNames: 'assets/[name]-[hash][extname]',
                 },
             },
         },
