@@ -30,7 +30,12 @@ jobs:
 
       - name: 📦 Install NPM Packages
         # Cài đặt các thư viện cần thiết cho Tailpress/Tailwind
-        run: npm ci || npm install
+        run: |
+          npm ci --prefer-offline --no-audit || (rm -rf node_modules package-lock.json && npm install --prefer-offline --no-audit)
+
+      - name: 🔧 Rebuild Native Bindings
+        # Ensure Tailwind CSS native bindings are properly compiled
+        run: npm rebuild @tailwindcss/oxide || npm install
 
       - name: 🛠️ Build Assets (Tailwind CSS/JS)
         # Chạy lệnh build tĩnh để sinh ra file CSS/JS cuối cùng
