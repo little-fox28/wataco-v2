@@ -1008,7 +1008,7 @@ function wataco_get_footer_data() {
 /**
  * Helper: Get Global Contact Info
  *
- * Retrieves the 5 global contact fields from WATACO Settings.
+ * Retrieves the 5 global contact fields from Cotact Settings.
  * Generates a clean phone number for hrefs.
  *
  * @return array<string, string>

@@ -16,8 +16,8 @@ if (!defined('ABSPATH')) {
  */
 function wataco_register_settings_menu_page() {
     add_menu_page(
-        __('WATACO Settings', 'wataco'),
-        __('WATACO Settings', 'wataco'),
+        __('Cotact Settings', 'wataco'),
+        __('Cotact Settings', 'wataco'),
         'edit_others_posts',
         'wataco-settings',
         'wataco_render_settings_page',

@@ -10,3 +10,4 @@ require_once get_stylesheet_directory() . '/inc/polylang-careers.php';
 require_once get_stylesheet_directory() . '/inc/theme-settings.php';
 require_once get_stylesheet_directory() . '/inc/acf-about-us.php';
 require_once get_stylesheet_directory() . '/inc/acf-projects.php';
+require_once get_stylesheet_directory() . '/inc/dashboard.php';
