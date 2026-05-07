@@ -20,6 +20,14 @@ export default defineConfig(({ command }) => {
             cssMinify: true,
             target: 'es2019',
             reportCompressedSize: false,
+            rollupOptions: {
+                input: 'style.css',
+                output: {
+                    entryFileNames: 'assets/[name]-[hash].js',
+                    chunkFileNames: 'assets/[name]-[hash].js',
+                    assetFileNames: 'assets/[name]-[hash][extname]',
+                },
+            }
         },
         esbuild: {
             legalComments: 'none',
