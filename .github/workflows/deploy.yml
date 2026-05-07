@@ -43,7 +43,7 @@ jobs:
       - name: 📊 Show Changed Files
         run: git diff --name-only HEAD~1 || echo "First deployment or initial commit"
 
-      - name: 🚀 FTP Deploy to Tino Hosting
+      - name: 🚀 FTP Deploy to Hosting
         if: success() # Only deploy if all previous steps succeeded
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
