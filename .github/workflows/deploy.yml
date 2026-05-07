@@ -10,6 +10,8 @@ jobs:
   build-and-deploy:
     name: Build Node.js & FTP Sync
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: 🚚 Checkout Code
@@ -20,7 +22,7 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18' # Đảm bảo khớp với version đang dùng ở môi trường Local
+          node-version: '20'
           cache: 'npm' # Cache npm packages to speed up installs
 
       - name: 📋 Verify Node Version
@@ -29,16 +31,13 @@ jobs:
           npm --version
 
       - name: 📦 Install NPM Packages
-        # Cài đặt các thư viện cần thiết cho Tailpress/Tailwind
+        # Clear cache and node_modules to fix native binding compilation issues
         run: |
-          npm ci --prefer-offline --no-audit || (rm -rf node_modules package-lock.json && npm install --prefer-offline --no-audit)
-
-      - name: 🔧 Rebuild Native Bindings
-        # Ensure Tailwind CSS native bindings are properly compiled
-        run: npm rebuild @tailwindcss/oxide || npm install
+          npm cache clean --force
+          rm -rf node_modules package-lock.json
+          npm install
 
       - name: 🛠️ Build Assets (Tailwind CSS/JS)
-        # Chạy lệnh build tĩnh để sinh ra file CSS/JS cuối cùng
         run: npm run build
 
       - name: 📊 Show Changed Files
