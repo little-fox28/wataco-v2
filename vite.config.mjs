@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vite';
 
 export default defineConfig(({ command }) => {
     const isBuild = command === 'build';
@@ -12,7 +12,7 @@ export default defineConfig(({ command }) => {
             origin: 'http://localhost:8000',
         },
         build: {
-            manifest: true,
+            manifest: false,
             outDir: 'dist',
             emptyOutDir: true,
             sourcemap: false,
@@ -21,16 +21,8 @@ export default defineConfig(({ command }) => {
             target: 'es2019',
             reportCompressedSize: false,
             rollupOptions: {
-                input: [
-                    'resources/js/app.js',
-                    'resources/css/app.css',
-                    'resources/css/editor-style.css'
-                ],
-                output: {
-                    assetFileNames: 'assets/[name]-[hash][extname]',
-                    chunkFileNames: 'assets/[name]-[hash].js',
-                    entryFileNames: 'assets/[name]-[hash].js',
-                },
+                // No entry files needed - Tailwind CSS is applied via the plugin
+                input: {},
             },
         },
         esbuild: {
