@@ -31,7 +31,9 @@ jobs:
       - name: 📦 Install NPM Packages
         # Cài đặt các thư viện cần thiết cho Tailpress/Tailwind
         run: |
-          npm ci --prefer-offline --no-audit || (rm -rf node_modules package-lock.json && npm install --prefer-offline --no-audit)
+          # npm ci --prefer-offline --no-audit || (rm -rf node_modules package-lock.json && npm install --prefer-offline --no-audit)
+            rm -rf node_modules package-lock.json
+            npm install
 
       - name: 🔧 Rebuild Native Bindings
         # Ensure Tailwind CSS native bindings are properly compiled
