@@ -22,20 +22,15 @@ jobs:
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm' # Cache npm packages to speed up installs
-
+          node-version: '24'
+          cache: 'npm' # Cache npm packages để tăng tốc độ cài đặt
       - name: 📋 Verify Node Version
         run: |
           node --version
           npm --version
 
       - name: 📦 Install NPM Packages
-        # Clear cache and node_modules to fix native binding compilation issues
-        run: |
-          npm cache clean --force
-          rm -rf node_modules package-lock.json
-          npm install
+        run: npm ci
 
       - name: 🛠️ Build Assets (Tailwind CSS/JS)
         run: npm run build
@@ -44,7 +39,7 @@ jobs:
         run: git diff --name-only HEAD~1 || echo "First deployment or initial commit"
 
       - name: 🚀 FTP Deploy to Hosting
-        if: success() # Only deploy if all previous steps succeeded
+        if: success() # Chỉ deploy khi các bước trên thành công
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           # Gọi các khóa bí mật từ GitHub Secrets
@@ -81,11 +76,9 @@ jobs:
             .distignore
             .gitignore
             .eslintrc*
-
       - name: ✅ Deployment Success
         if: success()
         run: echo "🎉 Deployment completed successfully!"
-
       - name: ❌ Deployment Failed
         if: failure()
         run: |

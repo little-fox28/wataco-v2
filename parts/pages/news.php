@@ -60,12 +60,6 @@ $query_args = array(
     'orderby'             => 'date',
     'order'               => 'DESC',
     'no_found_rows'       => true,
-    'meta_query'          => array(
-        array(
-            'key'     => '_wataco_news_source_id',
-            'compare' => 'EXISTS',
-        ),
-    ),
 );
 
 if ($news_term instanceof WP_Term) {
@@ -74,12 +68,6 @@ if ($news_term instanceof WP_Term) {
 }
 
 $news_query = new WP_Query($query_args);
-
-// Fallback for legacy/manual news posts if imported-source meta is not available.
-if (!$news_query->have_posts()) {
-    unset($query_args['meta_query']);
-    $news_query = new WP_Query($query_args);
-}
 
 $news_items = array();
 $category_counts = array();
