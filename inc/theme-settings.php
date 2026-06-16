@@ -173,6 +173,18 @@ function wataco_register_theme_settings() {
 add_action('admin_init', 'wataco_register_theme_settings');
 
 /**
+ * Filter the capability required to save the theme settings option group.
+ * This allows Editors (who have 'edit_others_posts') to save settings.
+ *
+ * @param string $capability Default capability.
+ * @return string
+ */
+function wataco_theme_settings_capability($capability) {
+    return 'edit_others_posts';
+}
+add_filter('option_page_capability_wataco_theme_settings_group', 'wataco_theme_settings_capability');
+
+/**
  * Render settings section helper description.
  *
  * @return void

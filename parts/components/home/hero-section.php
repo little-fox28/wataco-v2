@@ -44,13 +44,16 @@ $slider_cta = pll__('Get Consultation');
 
 <section id="section-0" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1A2B3C]">
     <div class="absolute inset-0 z-0">
-        <video
-            src="https://cdn.wataco.com.vn/video_banner.mp4"
-            class="w-full h-full object-cover opacity-100"
-            autoplay
-            muted
-            loop
-            playsinline>
+        <video 
+            class="w-full h-full object-cover" 
+            autoplay 
+            loop 
+            muted 
+            playsinline 
+            preload="metadata"
+            poster="https://cdn.wataco.com.vn/wp-content/uploads/2026/05/wataco_poster.webp"
+        >
+            <source src="https://cdn.wataco.com.vn/video_banner.mp4" type="video/mp4">
         </video>
         <div class="absolute inset-0 bg-linear-to-b from-[#FFD700]/10 to-[#228B22]/50"></div>
     </div>

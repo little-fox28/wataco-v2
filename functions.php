@@ -11,3 +11,5 @@ require_once get_stylesheet_directory() . '/inc/theme-settings.php';
 require_once get_stylesheet_directory() . '/inc/acf-about-us.php';
 require_once get_stylesheet_directory() . '/inc/acf-projects.php';
 require_once get_stylesheet_directory() . '/inc/dashboard.php';
+require_once get_stylesheet_directory() . '/inc/upload-webp.php';
+require_once get_stylesheet_directory() . '/inc/admin-access.php';
