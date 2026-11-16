@@ -218,12 +218,5 @@ $count_all           = count($projects);
 
         <!-- Sentinel for Infinite Scroll -->
         <div x-intersect.margin.300px="loadMore()" class="h-6"></div>
-
-        <!-- Counter -->
-        <div class="text-center mt-6 space-y-2">
-            <p class="text-xs text-gray-400 font-medium"
-               x-text="'<?php echo esc_js($showing_tpl); ?>'.replace('{current}', currentVisible).replace('{total}', totalFiltered)">
-            </p>
-        </div>
     </div>
 </section>
