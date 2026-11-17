@@ -16,27 +16,20 @@ $back_fallback_url = wp_get_referer();
 if (empty($back_fallback_url)) {
     $back_fallback_url = home_url('/news/');
 }
-$language_labels = array(
-    'vi' => 'VN',
-    'en' => 'EN',
-    'ja' => 'JP',
-);
-$language_items = array();
+$mobile_languages = array();
 if (function_exists('pll_the_languages')) {
     $language_rows = pll_the_languages(array(
         'raw' => 1,
     ));
     if (is_array($language_rows)) {
-        foreach ($language_rows as $language) {
-            $slug = sanitize_key((string) ($language['slug'] ?? ''));
-            $language_items[] = array(
-                'label'      => $language_labels[$slug] ?? strtoupper($slug),
-                'url'        => (string) ($language['url'] ?? '#'),
-                'is_current' => !empty($language['current_lang']),
-            );
-        }
+        $mobile_languages = $language_rows;
     }
 }
+$language_labels = array(
+    'vi' => 'VN',
+    'en' => 'EN',
+    'ja' => 'JP',
+);
 ?>
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -47,6 +40,7 @@ if (function_exists('pll_the_languages')) {
 </head>
 <body <?php body_class(); ?>>
     <?php wp_body_open(); ?>
+    <?php get_template_part('parts/components/common/announcement-bar'); ?>
 
     <!-- Header -->
     <header class="w-full z-50 transition-all duration-300 bg-[#228B22] border-b border-white/5 sticky top-0" 
@@ -84,13 +78,14 @@ if (function_exists('pll_the_languages')) {
 
                 <!-- Language Switcher -->
                 <div class="flex items-center space-x-3 text-xs">
-                    <?php foreach ($language_items as $item) : ?>
-                        <a
-                            href="<?php echo esc_url($item['url']); ?>"
-                            class="<?php echo esc_attr($item['is_current'] ? 'text-[#FFD700]' : 'text-white/90 hover:text-[#FFD700] transition-colors'); ?>">
-                            <?php echo esc_html($item['label']); ?>
-                        </a>
-                    <?php endforeach; ?>
+                    <?php
+                    if (function_exists('pll_the_languages')) {
+                        pll_the_languages(array(
+                            'display_names_as' => 'slug',
+                            'dropdown'         => 0,
+                        ));
+                    }
+                    ?>
                 </div>
 
                 <!-- CTA Button -->
@@ -218,13 +213,20 @@ if (function_exists('pll_the_languages')) {
             <div class="mt-auto flex flex-col space-y-6">
                 <!-- Language Switcher -->
                 <div class="flex space-x-6 text-sm font-bold">
-                    <?php foreach ($language_items as $item) : ?>
-                        <a
-                            href="<?php echo esc_url($item['url']); ?>"
-                            class="<?php echo esc_attr($item['is_current'] ? 'text-[#FFD700]' : 'text-gray-400 hover:text-white transition-colors'); ?>">
-                            <?php echo esc_html($item['label']); ?>
-                        </a>
-                    <?php endforeach; ?>
+                    <?php if (!empty($mobile_languages)) : ?>
+                        <?php foreach ($mobile_languages as $language) : ?>
+                            <?php
+                            $slug = sanitize_key((string) ($language['slug'] ?? ''));
+                            $label = $language_labels[$slug] ?? strtoupper($slug);
+                            $is_current = !empty($language['current_lang']);
+                            ?>
+                            <a
+                                href="<?php echo esc_url((string) ($language['url'] ?? '#')); ?>"
+                                class="<?php echo esc_attr($is_current ? 'text-[#FFD700]' : 'text-gray-400 hover:text-white transition-colors'); ?>">
+                                <?php echo esc_html($label); ?>
+                            </a>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
                 <!-- CTA Button -->
